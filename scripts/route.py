@@ -91,6 +91,8 @@ def validate_config(cfg: Any, root: Path = ROOT) -> dict[str, Any]:
     for spec in cfg["specialists"]:
         if not spec.get("when_any") or not set(spec["when_any"]).issubset(cfg["facts"]):
             raise RoutingError(f"Unknown or missing fact trigger for {spec['id']}")
+        if spec.get("phase", "domain") not in {"prelude", "domain"}:
+            raise RoutingError(f"Unknown specialist phase for {spec['id']}")
     if type(cfg["max_support_now"]) is not int or cfg["max_support_now"] < 1:
         raise RoutingError("max_support_now must be a positive integer")
     return cfg
@@ -168,6 +170,10 @@ def text_candidates(cfg: dict[str, Any], task: str) -> list[dict[str, Any]]:
     return sorted(scores, key=lambda x: (-x["weight"], priority[x["id"]]))
 
 
+def specialists_by_id(cfg: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {spec["id"]: spec for spec in cfg["specialists"]}
+
+
 def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
     request = normalize_request(cfg, raw)
     routes = {route["id"]: route for route in cfg["routes"]}
@@ -192,15 +198,21 @@ def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
                  for p in spec.get("hints", [])):
             suggested.append({"id": spec["id"], "path": spec["path"],
                               "status": "text-hint-only; confirm relevant facts before loading"})
+    # Prelude support restores context/progress and never consumes the domain-support budget.
+    # This keeps handoff/recovery from pushing the actual engineering boundary out of LOAD_NOW.
+    preludes = [item for item in support if specialists_by_id(cfg)[item["id"]].get("phase", "domain") == "prelude"]
+    domains = [item for item in support if specialists_by_id(cfg)[item["id"]].get("phase", "domain") != "prelude"]
     limit = cfg["max_support_now"]
-    specialists = {spec["id"]: spec for spec in cfg["specialists"]}
+    load_support = preludes + domains[:limit]
+    deferred_support = domains[limit:]
+    specialists = specialists_by_id(cfg)
     preferred = list(route["capabilities"])
-    for selected in support[:limit]:
+    for selected in load_support:
         preferred.extend(cap for cap in specialists[selected["id"]]["capabilities"]
                          if cap not in preferred)
     # Future boundaries remain visible without becoming today's prerequisites.
     deferred_caps: list[str] = []
-    for selected in support[limit:]:
+    for selected in deferred_support:
         deferred_caps.extend(cap for cap in specialists[selected["id"]]["capabilities"]
                              if cap not in preferred and cap not in deferred_caps)
     available = request["capabilities"]
@@ -215,8 +227,8 @@ def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
         "ACTION": route["action"], "DONE": route["done"],
         "stage": request["stage"], "stage_policy": cfg["stages"][request["stage"]],
         "facts": request["facts"], "SUPPORT": support,
-        "LOAD_NOW": [route["path"]] + [s["path"] for s in support[:limit]],
-        "DEFERRED": support[limit:], "SUGGESTED_SUPPORT": suggested,
+        "LOAD_NOW": [route["path"]] + [s["path"] for s in load_support],
+        "DEFERRED": deferred_support, "SUGGESTED_SUPPORT": suggested,
         "CAPABILITIES": {"preferred": preferred, "available": available, "missing": missing,
                          "deferred": deferred_caps, "guide": "references/runtime.md"},
         "NEXT": next_routes, "CANDIDATES": candidates,
