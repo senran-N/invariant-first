@@ -15,15 +15,13 @@
 
 原始 [现场材料](field-notes-2026-09-19.md) 与 [源码样本](source-lessons.md) 保留核查坐标；它们不是新增禁令的模板。模型、框架和故事名从执行判断中去掉，不影响真正必要的语义与风险差异。
 
-## 本轮归纳依据 · 2026-09-19
+## 机制与适用前提
 
-**社区线索。** [Cursor 讨论](https://forum.cursor.com/t/why-does-cursor-ignore-rules/137219) 中用户报告规则未得到遵循；后续一位用户表示处理格式与冲突后情况改善，不能据此断言所有失效都由规则长度造成。[V2EX 讨论](https://www.v2ex.com/amp/t/1119929) 描述维护已有结构的困难，以及提示要求增多后产生额外抽象的体验。这些是个体观察，不作为发生率或对某模型的普遍结论。
+**把现象与解释分开。** [V2EX 作者的公开摘要](https://global.v2ex.com/t/1237708) 描述：录制任务未退出，尚未找到卡点时，Agent 已为不同猜测分别修改生命周期、取消和重试。这里只读取到检索摘要，正文访问转向登录，未复现该项目。对应的成熟机制见 Git `v2.46.0` 的 [bisect_run / verify_good](https://github.com/git/git/blob/v2.46.0/builtin/bisect.c)：无法测试的 125 状态走 skip；首次遇到可能源于执行环境的 126/127，还会在已知良好版本作对照。借鉴的是先判断信号能说明什么，再用能区分原因的反馈更新判断，不是每次修复都执行二分或重复测试。
 
-**成熟机制。** Linux `v6.12` 的 [list.h](https://github.com/torvalds/linux/blob/v6.12/include/linux/list.h) 用表头自环表示空链表，添加与删除围绕相邻节点关系；同文件仍保留硬化检查。借鉴的是用表示统一操作，不是删除保护。Go `go1.23.2` 的 [io.go](https://github.com/golang/go/blob/go1.23.2/src/io/io.go) 用 Reader/Writer 契约表达复制，`copyBuffer` 可委托 WriterTo/ReaderFrom，也保留通用路径及错误处理。它仍包含具体优化；借鉴的是以共同契约组织真实差异，不是禁止特化实现。两者均为协作项目的版本样本，不将每行代码归为创始人独作。
+**复用取决于前提，而非记忆有多新。** [Cursor 原始报告](https://forum.cursor.com/t/agent-with-confusion-hallucinations-and-mutiny-100-broken/168293) 描述摘要混入不同分支事实，导致重复实现和纠正后的方案摆动；这是用户归因，不是独立复现。[另一条分支显示讨论](https://forum.cursor.com/t/agents-glass-ui-reports-wrong-branch/158304) 中，支持回复将旧标签归因于存储快照与实际分支脱节，也区分了后续不同问题。SQLite `version-3.46.1` 的 [OP_Transaction](https://github.com/sqlite/sqlite/blob/version-3.46.1/src/vdbe.c) 与 [sqlite3_step](https://github.com/sqlite/sqlite/blob/version-3.46.1/src/vdbeapi.c) 检查 schema 条件并在对应失效时重新准备语句；仍匹配的 schema 不因一次语句失效被无条件重载。借鉴的是限定结论的适用对象和失效条件，而不是让 Agent 实现一套缓存或每轮重扫仓库。
 
-**设计取舍。** John Ousterhout 的 [CS190 讲义](https://web.stanford.edu/~ouster/cs190-winter22/lectures/intro/) 将依赖、不一致和特殊情况列为复杂性的来源，讨论消除/隐藏复杂性与增量设计。这里只借鉴理解和修改成本的判断，不照搬课程评分取舍。
-
-**本包推导。** 将个案合并为目标、表示、边界、反馈与知识归属的判断；同一因果关系只维护一处，专项保留独有动作。检验新规则时既换场景看迁移，也改条件看能否正确区别。收敛不能变成“永远最短”或“永远不加抽象”。这是设计选择，效果仍需 [行为对照](evaluation.md)。
+**判断是有边界的更新。** [Ousterhout 的 CS190 讲义](https://web.stanford.edu/~ouster/cs190-winter22/lectures/intro/) 把设计视为增量过程：做一部分设计、实施、从结果中学习再调整。此前 Linux 表示与 Go 接口样本支持的共同责任仍然保留。结合这些材料，本包在已有目标、反馈和知识判断中区分要求与假设，选择会改变行动的观察，并只修订受失效前提影响的决定；明确的修复直接执行，局部纠正不自动变成全局反转。这是工程归纳，不是这些作者共同规定的方法，也没有完成模型效果实验。
 
 ## 继承材料的来源与边界
 
