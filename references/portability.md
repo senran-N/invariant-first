@@ -2,7 +2,9 @@
 
 ## 安装整个目录
 
-把完整 `invariant-first/` 放入当前宿主实际支持的 Skills 目录，保持内部相对位置。更新旧版时替换这个 Skill 目录，不覆盖项目自己的规则。不要维护两份手工分叉的配置或方法。
+运行时默认安装 **single-entry 导出**，保持完整目录与相对资源，但只暴露根 `SKILL.md`。更新旧版时先替换整个 `invariant-first/` 目录，再让宿主重新扫描；不要只把新文件覆盖到旧目录上，因为已经删除的子入口可能残留，也不要维护两份手工分叉的配置或方法。
+
+源码树保留多个嵌套 `SKILL.md` 作为维护结构。只有当宿主不会递归自动发现它们，或你明确希望每个子技能都独立暴露时，才直接安装源码形态。
 
 核心使用标准 SKILL.md、name/description 元数据与相对资源路径。脚本需要可选的 Python 3.10+ 标准库；规则本身不依赖 Python、shell、网络、浏览器、记忆、子代理或某种 slash command。
 
@@ -10,12 +12,12 @@
 
 | 分发形态 | 内容 | 使用情况 |
 | --- | --- | --- |
-| 完整路由包 | 根 SKILL.md + skills/if-*/SKILL.md | 仓库型技能包和可以读取相对文件的编码工具；子技能可独立寻址 |
-| single-entry 导出 | 仅根 SKILL.md，子技能转成 GUIDE.md | 只允许一个 Skill 入口的导入器；总入口照样路由到资源文件 |
+| 源码 / 多入口包 | 根 SKILL.md + skills/if-*/SKILL.md | 维护、测试，或明确需要独立发现子技能的受控宿主 |
+| single-entry 导出 | 仅根 SKILL.md，子技能转成 GUIDE.md | **默认运行时分发**；递归扫描或单 Skill 导入器都只发现 `invariant-first` 根入口 |
 
 导出由 `scripts/export_single.py` 从同一来源自动生成，并重写配置、索引和示例路径；排除 `.git`、`.hg`、`.svn` 与 Python 缓存，不携带版本库历史。不要分别维护两个版本。单入口导出不是把所有指令一次塞进上下文，仍需要宿主能读取引用资源。
 
-完整包有多个 SKILL.md，不保证每个原生上传界面都接受；尤其单 Skill 导入界面应使用 single-entry 包。自动发现、递归扫描和 UI 展示是宿主能力，不由 ZIP 自动提供。
+源码包有多个 `SKILL.md`，递归扫描宿主会把它们分别注册成 Skill；这会绕过根路由，也会让旧会话继续持有已经删除或改名的子入口位置。因此运行时优先使用 single-entry 包。以 Pi 为例，官方文档说明它会递归发现技能目录中的 `SKILL.md`，并在启动时把发现结果放入会话；替换安装目录后执行 `/reload`（或开启新会话）重新扫描。参考：https://pi.dev/docs/latest/skills 与 https://pi.dev/docs/latest/usage 。
 
 ## 四类宿主能力
 

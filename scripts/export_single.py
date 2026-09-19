@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Export the same instructions with one SKILL.md for single-skill importers.
+"""Export the portable runtime distribution with exactly one discoverable SKILL.md.
 
-The canonical package retains independently addressable specialist SKILL.md files.
-This exporter renames only nested entrypoints and rewrites local path references.
-It never edits the source package and never calls a client or external service.
+The source package retains independently addressable specialist SKILL.md files for
+maintenance. Runtime distributions rename nested entrypoints to GUIDE.md so recursive
+skill discovery cannot bypass the root router or retain stale child-skill locations.
+This exporter rewrites only local paths, never edits the source package, and never
+calls a client or external service.
 """
 from __future__ import annotations
 import argparse
@@ -54,8 +56,9 @@ def export(source: Path, destination: Path) -> Path:
     for name, content in render(cfg).items():
         (destination / name).write_text(content, encoding="utf-8")
     (destination / "EXPORT.md").write_text(
-        "# Single-entry export\n\nGenerated from the canonical package. Only the root SKILL.md is discoverable; "
+        "# Single-entry runtime export\n\nGenerated from the canonical source package. Only the root SKILL.md is discoverable; "
         "specialists are relative GUIDE.md resources with unchanged instructions. "
+        "Use this form for recursive-discovery harnesses such as Pi and for single-skill importers. "
         "Do not edit this export as a second source of truth.\n", encoding="utf-8")
     validate_config(cfg, destination)
     if len(list(destination.rglob("SKILL.md"))) != 1:
