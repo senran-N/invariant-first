@@ -175,15 +175,16 @@
 
 **限制：** 不照搬 Kubernetes 的年限或版本数量；服务下线、数据导出和资源收尾是本包的适配，不是上述单个函数提供的保证。
 
-### R4 · Google eng-practices：审查促进改善，不以完美阻断进展
+<a id="review-evidence"></a>
+### R4 · Google、Go 与 curl：结论由证据和适用条件承担
 
-- 官方指南：https://google.github.io/eng-practices/review/reviewer/standard.html
+[Google 审查标准](https://google.github.io/eng-practices/review/reviewer/standard.html) 区分实质问题与非阻塞修饰，允许整体质量改善的变更推进；[审查内容指南](https://google.github.io/eng-practices/review/reviewer/looking-for.html) 要求阅读相关上下文、关注用户行为与测试有效性。借鉴的是让发现能推动正确修改，不按评论数量或个人偏好判断审查价值。
 
-**项目事实：** 指南要求在维护系统整体质量的同时允许开发推进，区分实质问题与非阻塞修饰建议，不以个人偏好代替技术理由。
+**Go `go1.23.2`：** [`lostcancel.go`](https://github.com/golang/go/blob/go1.23.2/src/cmd/vendor/golang.org/x/tools/go/analysis/passes/lostcancel/lostcancel.go) 在控制流图中寻找取消函数未被使用就返回的路径，并关联定义处与返回处；它将任意变量引用计为使用，也对超出函数作用域的变量作保守假设。因此诊断提供的是其分析模型内的线索，沉默不是取消动作一定发生的证明。本地以同版本分析器做了四个小对照：分支遗漏被告警且行为检查失败；仅补变量引用后告警消失而行为仍失败；正确释放时两者通过；明确转交取消责任时，调用方检查通过且没有告警。这是工具机制试验，不是完整分析器评估或模型实验。
 
-**提炼：** review 报告具体问题及后果；没有实质问题就直说，只有修复授权才修改。不把审查意见数量当质量。
+**curl 的反例：** [`curl-8_16_0/lib/hostip.c`](https://github.com/curl/curl/blob/curl-8_16_0/lib/hostip.c) 将 `Curl_resolv` 的输出参数注释为可选；在 [`curl-8_17_0` 的同文件](https://github.com/curl/curl/blob/curl-8_17_0/lib/hostip.c) 中，该说法被移除，实现仍要求有效输出参数。结合[维护者对该报告的说明](https://daniel.haxx.se/blog/2025/10/10/a-new-breed-of-analyzers/)，这支持把问题定位为错误的接口说明，而不是见到解引用就增加一层判空。这里只比较该注释与用法，不声称两个版本之间只有此项变化，也未编译审计全部 curl。
 
-**限制：** 路由与授权规则为本 Skill 适配；并不声称此指南保证模型不会漏报或误报。
+**提炼与边界：** 可疑形状先成为候选；用输入、真实调用、现有保证与后果建立可核查关系，复现与明确推导均可提供证据。再判断应修改实现、文档还是调用者。真实对外承诺允许空值时仍须修实现，不能照抄 curl 的结论；其他受支持配置未在本机运行，也不等于缺陷不存在。复核须证实原关系不再成立或原判断有误，不能从评论关闭、未再告警推断修复。只读与修改的授权边界仍由用户决定。
 
 ## 修改过程：保护已有工作与可观察中间态
 

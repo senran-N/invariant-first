@@ -43,6 +43,10 @@
 
 现有 recovery 中“重复只为新信息”的表述不足以涵盖安全重试对暂时故障的恢复作用，现区分诊断循环与操作重试：前者需要有区分力的观察，后者需要有效恢复契约和预算。等待、续取结果与重放分别决定动作；handoff 保留未决操作的定位信息。按 [Google SRE 的重试责任与预算](https://sre.google/sre-book/handling-overload/) 防止各层重复放大工作，不固定次数、时长或要求新建调度平台。上述归纳尚未经过模型对照评估。
 
+**审查结论随行为证据更新，不随报告数量和显示状态更新。** [Cursor 的多轮审查讨论](https://forum.cursor.com/t/bugbot-doesnt-catch-all-issues-on-first-pass-multiple-review-cycles-needed/151367)（2026-02 至 04）描述同一变更需多轮才陆续出现问题；[另一条报告与支持回复](https://forum.cursor.com/t/bugbot-appears-to-resolve-prior-inline-findings-after-an-unrelated-commit/154401)（2026-03-11）则描述旧问题未修却被判为已解决。它们提示发现集合与问题状态不是同一件事，不证明本包能让模型一次找全所有问题，也不代表这些工具当前仍有同样表现。未独立复现这些会话。[Hacker News 的使用者讨论](https://news.ycombinator.com/item?id=45449348) 中，也有人描述审查只重复已有 FIXME 或泛泛称赞，并希望得到有价值的可疑位置；这是个人体验，不是对当前模型的能力测量。
+
+Daniel Stenberg 的 [2025-07 维护经历](https://daniel.haxx.se/blog/2025/07/14/death-by-a-thousand-slops/) 描述核查低质量报告的负担；他的 [2025-10 反例](https://daniel.haxx.se/blog/2025/10/10/a-new-breed-of-analyzers/) 又展示有效的 AI 辅助发现，其中一处正确修复是改错注释而不是实现新容错行为。[2026-04 的后续](https://daniel.haxx.se/blog/2026/04/22/high-quality-chaos/) 描述报告质量改善后仍存在的处理压力。因此不按 AI 来源接受或排斥报告，也不把降低报告数当目标。对照 [R4 的 Go 控制流诊断与 curl 历史修正](source-lessons.md#review-evidence)，提炼为：沿真实条件确认违背了什么保证，区分问题成立与修法成立，再以原条件复核是否修好。高后果的未知需要交代，不因缺少可运行环境就排除；显示关闭、重新扫描未提及或局部检查通过，都不能扩大证据的结论范围。落实在 review 与 fix，不另建事故目录或审批流程。
+
 ## 继承材料的来源与边界
 
 A 编号用于保留已有来源坐标，不对应新增问题条目，也不表示每轮都重新读取或复现实验；各机制段落分别说明报告、作者解释与源码依据的限制。
