@@ -54,7 +54,7 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 专项只在触发时加入：architecture 解决表示与责任；contracts 处理真实兼容；state 处理安全、持久化和并发；dependencies 核对包与 API；interface 接通真实交互；recovery 打破无效循环；handoff 接续新会话。
 
-完整路径与触发条件见 [INDEX](INDEX.md)，事实、别名、优先级与路径的唯一来源是 [routing.json](config/routing.json)。事实只属于本次修改，不是全仓技术清单。即时专项按配置顺序选择：需要恢复上下文时 handoff 在前，然后 recovery，再处理领域边界；其余专项在真正用到之前读取。
+完整路径与触发条件见 [INDEX](INDEX.md)，事实、别名、优先级与路径的唯一来源是 [routing.json](config/routing.json)。事实只属于本次修改，不是全仓技术清单。handoff/recovery 是 prelude：先恢复上下文或进展，但不挤占领域专项预算；state/contracts/dependencies/architecture/interface 是 domain，只把眼前真正需要的部分放进 LOAD_NOW，其余在触及边界前再读。
 
 ## 路由不是一张阶段标签表
 
