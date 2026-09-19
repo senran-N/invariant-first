@@ -5,41 +5,42 @@ description: 构建优先的跨 harness 工程技能路由器。用于从零开�
 
 # Invariant First · 选对方法，做完，接得住
 
-交付成果，不表演流程。你是负责把工程决定落实到代码和文档的执行者，不是等待用户逐步批准的流程管理员。保留用户约束、事实、权限和必要安全；在边界内自己完成可逆取舍。
+交付成果，不表演流程。保留用户硬约束、真实契约和必要安全；在边界内自己完成工程取舍。架构让修改有落点，文档让用户会用、下一轮 AI 会改。路由只是选择方法，不能成为开工审批。
 
 ## 执行入口
 
-1. 读取一次 [RULES](RULES.md)。从当前请求和相关入口确定**现在要交付什么**，不要先做全仓审计。实现请求默认推进实现；讨论、审查与文档不等于修改生产系统的授权。
-2. 选择唯一 PRIMARY。能运行 Python 3.10+ 时使用 `scripts/route.py`；不能运行时读 [MASTER-ROUTING](MASTER-ROUTING.md) 中同源生成的分流表。确定的拼写或局部小改可直接选路并执行，不强制调用脚本。
-3. **立即读取输出的 PRIMARY 文件并执行其中 ACTION。** 不以“已加载/已路由”结束。SUPPORT 是按事实命中的专项方法，不是另一个 Agent；先读 LOAD_NOW，只有涉及对应边界时再读 DEFERRED，不把待加载等同于可以忽略。
-4. 使用当前环境实际存在的读、搜、改、运行和比较能力。遇到工具或环境阻塞才读 [runtime](references/runtime.md)；缺工具不等于缺能力，不能凭空编造命令或擅自安装工具。
-5. 完成当前目标后交付。只有用户已请求的后续工作才进入 NEXT；路由本身不授予部署、删除或外部写入权限。普通任务不创建路由报告、阶段数据库或并行 Agent。
+1. 读取一次 [RULES](RULES.md)，从当前目标和相关入口确定要交付什么。不要先全仓审计；实现请求直接推进实现，讨论、审查与文档不自动授权修改生产系统。
+2. 按 [MASTER-ROUTING](MASTER-ROUTING.md) 选择唯一 PRIMARY，已知对应路径就直接读取。普通任务不必生成 JSON 或运行脚本；批量分派、宿主集成或排查路由时才使用 `scripts/route.py`。小到确定的局部修正，不加载无关模块。
+3. **读完当前需要的模块，立即执行 PRIMARY 的 ACTION。** SUPPORT 只解决当前难点，不另开工程。需要接续时先用 handoff 恢复事实；已经失速时用 recovery 获得新信息，再继续原目标。脚本的 LOAD_NOW 是本轮阅读集合，不是照着执行的流水线；DEFERRED 在触及对应边界前加载。
+4. PRIMARY 控制交付物和行动范围：给 review 加架构专项仍然是审查，给 document 加状态专项仍然是写文档。工具不支持或环境受阻时才读 [runtime](references/runtime.md)，不假定专属命令、shell、子代理或记忆存在。
+5. 完成当前授权目标后交付。仅当用户已请求后续工作才进入 NEXT；不要以“已路由”“已检查”替代实现，也不为普通任务创建路由报告、阶段数据库或多 Agent 编排。
 
-## 两种可互换的路由入口
+## 需要可重复分派时
 
-在 Skill 根目录执行；命令中的路径随实际安装位置解析：
+在 Skill 根目录执行；只使用已提供的 Python 3.10+，不为路由安装运行时：
 
 ```sh
 python scripts/route.py --task "修复重复写入问题" --intent fix --facts shared_state,external_effects,external_consumers
 python scripts/route.py --request examples/route-request.json
 ```
 
-`--intent` 是你根据用户目标作出的明确判断，脚本负责一致映射；不指定时只是关键词候选，**不是完整的自然语言理解器**。候选与真实目标冲突时按用户目标纠正并用显式 intent 重跑，不让用户替你选菜单。事实只填已经看见的条件，不能把猜想当真相。
+`--intent` 是根据用户目标作出的语义判断；不指定时只产生关键词候选，不是完整的自然语言理解。候选不合适就采用正确 PRIMARY，不为纠正一次分类反复运行脚本，也不让用户替你选菜单。
 
-PRIMARY 决定工作目标；SUPPORT 补充当前难点；CAPABILITIES 表示能力差额；NEXT 仅保存明确给出的后续序列。选择、加载与执行是三件事，不能用路由输出冒充代码已完成。
+事实只描述**本次改动和当前阻塞**，不是整个仓库拥有的所有技术。仓库里有数据库，不代表改一段帮助文字也要加载持久化专项。接续已完成、阻塞已解除时撤下临时 SUPPORT，不继续沿用过期事实。
 
-## 路由与衔接规则
+PRIMARY 决定目标；SUPPORT 按配置顺序加载，接续和失速恢复优先于领域工作；CAPABILITIES 的 preferred/missing 只覆盖 PRIMARY 与即时专项，deferred 单列后续才可能用到的能力。能力是可用手段，不是任务前置门槛，更不是操作授权。
 
-- “修 bug，必要时重构”仍以 fix 为主；“保持行为替换实现”走 evolve；“写事故手册”走 document；“审查迁移”走 review，不执行迁移。
-- 生命周期依据本次边界：无真实依赖的预览不造兼容；已有调用者或持久数据就承担契约。安全跟暴露面走，不等第二阶段。
-- 一次只推进一个明确工作目标。主目标未变时不反复分诊；遇到已定位的新难点加载专项方法，不重新开一个设计项目。
-- 连续尝试不再获得新信息时加载 recovery；新会话或任务必须接续时加载 handoff。恢复后回到原 PRIMARY，不把“研究怎么研究”当新任务。
-- 真正复用的经验写入项目已有权威位置，遵循 [experience](experience/README.md)；不自动改全局 Skill、保存秘密或将一次猜想升级为通用规则。
+## 目标不被方法抢走
 
-## 实现与资料分层
+- “修 bug，必要时重构”仍是 fix；“保持行为替换实现”是 evolve；“写事故手册”是 document；“审查迁移”是 review，不执行迁移。
+- 无真实旧依赖的预览直接完成核心，不造兼容平台；已有消费者或持久数据就守住受影响契约。安全跟暴露面走，不跟版本标签走。
+- 主目标未变就继续实现。只有新的具体困难才补方法，不反复分诊、重做计划或重开架构项目。
+- 真正复用的经验按 [experience](experience/README.md) 回到项目的权威位置；不自动改全局 Skill，不把一次猜想写成永久禁令，不靠聊天历史保持正确性。
 
-路由唯一事实源是 [config/routing.json](config/routing.json)；[MASTER-ROUTING](MASTER-ROUTING.md) 与 [INDEX](INDEX.md) 从它生成。子技能负责 ACTION 和完成条件，不重复维护路由表。普通任务不要加载整个目录。
+## 一个配置源，按需读取
 
-安装与单入口导入见 [portability](references/portability.md)；本次重构与 reverse-skill 的对应关系见 [routing-design](references/routing-design.md)；AI 编码痛点和依据见 [pain-points](references/ai-coding-pain-points.md)。原有名仓库与文档依据见 [source-lessons](references/source-lessons.md)、[documentation](references/documentation.md)。只有维护本包时才读 [evaluation](references/evaluation.md)。
+[routing.json](config/routing.json) 是路由唯一事实源；[MASTER-ROUTING](MASTER-ROUTING.md) 与 [INDEX](INDEX.md) 从它生成。子技能负责 ACTION 与完成条件。覆盖整个生命周期不等于每次读完整个目录。
 
-这是可执行的分派器加任务指令，不是安全沙箱或模型参数修改。宿主仍负责权限与工具执行；没有文件读取能力时使用单入口导出或预展开所需指令，不能声称仍能自动按需加载。
+安装见 [portability](references/portability.md)；机制见 [routing-design](references/routing-design.md)；依据见 [pain-points](references/ai-coding-pain-points.md)、[source-lessons](references/source-lessons.md) 与 [documentation](references/documentation.md)。维护本包才读 [AGENTS](AGENTS.md) 和 [evaluation](references/evaluation.md)，它们不是普通开发的前置步骤。
+
+这不是安全沙箱或模型参数修改。宿主负责权限与执行；单入口导出仍需读取相对资源，不具备读取能力的宿主必须预展开适用指令，不能冒充自动按需加载。

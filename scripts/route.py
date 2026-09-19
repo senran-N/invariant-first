@@ -193,10 +193,16 @@ def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
             suggested.append({"id": spec["id"], "path": spec["path"],
                               "status": "text-hint-only; confirm relevant facts before loading"})
     limit = cfg["max_support_now"]
+    specialists = {spec["id"]: spec for spec in cfg["specialists"]}
     preferred = list(route["capabilities"])
-    for selected in support:
-        spec = next(s for s in cfg["specialists"] if s["id"] == selected["id"])
-        preferred.extend(cap for cap in spec["capabilities"] if cap not in preferred)
+    for selected in support[:limit]:
+        preferred.extend(cap for cap in specialists[selected["id"]]["capabilities"]
+                         if cap not in preferred)
+    # Future boundaries remain visible without becoming today's prerequisites.
+    deferred_caps: list[str] = []
+    for selected in support[limit:]:
+        deferred_caps.extend(cap for cap in specialists[selected["id"]]["capabilities"]
+                             if cap not in preferred and cap not in deferred_caps)
     available = request["capabilities"]
     missing = None if available is None else [cap for cap in preferred if cap not in available]
     next_routes = [{"id": item, "path": routes[item]["path"]}
@@ -212,7 +218,7 @@ def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
         "LOAD_NOW": [route["path"]] + [s["path"] for s in support[:limit]],
         "DEFERRED": support[limit:], "SUGGESTED_SUPPORT": suggested,
         "CAPABILITIES": {"preferred": preferred, "available": available, "missing": missing,
-                         "guide": "references/runtime.md"},
+                         "deferred": deferred_caps, "guide": "references/runtime.md"},
         "NEXT": next_routes, "CANDIDATES": candidates,
         "authorization": "No permission is inferred or granted; follow the actual user and host scope.",
         "side_effects": "none: this command only reads the skill and prints a routing decision"

@@ -2,7 +2,9 @@
 
 **选对方法，直接做完，让下一位接得住。**
 
-这次不只是把十条开发流程列成表，而是提供可运行的路由器、独立技能、能力适配、失速恢复和有边界的经验回流。普通任务只读当前需要的部分；不要求多 Agent、不要求联网、不强制生成计划和检查报告。
+这是构建优先、跨 harness 的工程 Skills：按目标选方法，做完整实现，留下清楚的架构和可用文档。提供可选的路由程序、独立技能、失速恢复和跨会话接续；不把它们变成每次开发都要经过的流程。
+
+初衷在 [RULES](RULES.md)：减少不必要的防御与猜测性设计，但不省略真实责任；工程判断要落到成果，而不是更长的计划和验证报告。维护本仓库先读 [AGENTS](AGENTS.md)，本次改动见 [CHANGELOG](CHANGELOG.md)。
 
 ## 安装与第一次使用
 
@@ -14,11 +16,11 @@
 使用 invariant-first 实现这个功能。保持现有 CLI 行为，完成代码和真实用法。
 ```
 
-模型从 [SKILL.md](SKILL.md) 读取[共同规则](RULES.md)，选出 PRIMARY 后立即读取对应技能并行动。你不需要替模型选路线。
+模型从 [SKILL.md](SKILL.md) 读取[共同规则](RULES.md)，按目标选 PRIMARY，直接读取需要的技能并行动。普通任务无需执行路由脚本或生成 JSON；你不需要替模型选路线。需要接续或从失速中恢复时，先恢复事实与进展，再继续原任务。
 
 包中有两种分发形态，规则相同：完整路由包保留独立子技能入口；单入口导出版只有根 SKILL.md，其他方法是 GUIDE.md 资源，供不能导入多个 Skill 的工具使用。具体边界见[可移植性](references/portability.md)。
 
-## 看一次真正的路由结果
+## 批量、集成或诊断：运行同源路由程序
 
 已有 Python 3.10+ 时，在 `invariant-first/` 目录运行；无第三方依赖，不联网，不改项目文件：
 
@@ -44,7 +46,7 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 `--intent` 是明确的工程目标，优先于关键词。省略它时只得到候选分类，需由 Agent 对照真实请求确认；脚本不是任意语言的完整语义理解器。`--facts` 只填写已经确认的条件，不能把猜想当事实。
 
-没有 Python 时，模型读取[同源分流表](MASTER-ROUTING.md)后直接加载方法，不为路由安装运行时。
+[同源分流表](MASTER-ROUTING.md)始终可直接使用，不限于缺少 Python 时。意图已经明确就读对应方法，不为纠正关键词候选反复执行脚本，不为路由安装运行时。
 
 ## 生命周期与专项能力
 
@@ -52,7 +54,7 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 专项只在触发时加入：architecture 解决表示与责任；contracts 处理真实兼容；state 处理安全、持久化和并发；dependencies 核对包与 API；interface 接通真实交互；recovery 打破无效循环；handoff 接续新会话。
 
-完整路径与触发条件见 [INDEX](INDEX.md)，事实、别名、优先级与路径的唯一来源是 [routing.json](config/routing.json)。
+完整路径与触发条件见 [INDEX](INDEX.md)，事实、别名、优先级与路径的唯一来源是 [routing.json](config/routing.json)。事实只属于本次修改，不是全仓技术清单。即时专项按配置顺序选择：需要恢复上下文时 handoff 在前，然后 recovery，再处理领域边界；其余专项在真正用到之前读取。
 
 ## 路由不是一张阶段标签表
 
@@ -70,9 +72,12 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 默认不会创建路由日志、全仓索引或任务数据库，不自动下载工具，不用关键词授予操作权限。缺能力时提供可应用成果与真实缺口；有能力与权限就继续执行，不把可逆选择推回给用户。
 
+`CAPABILITIES.preferred` 与 `missing` 只计算 PRIMARY 和 LOAD_NOW，`deferred` 单列后续专项独有的能力。例如写文档时尚未加载界面专项，不会先要求交互工具。字段表示当前有用的手段而非强制门槛；没有某种工具，先用能完成目标的等价能力。
+
 ## 源码地图
 
 ```text
+AGENTS.md                本仓库的初衷与维护落点
 SKILL.md                 总入口与加载契约
 RULES.md                 构建、架构、文档和授权底线
 config/routing.json      唯一路由事实源
@@ -98,7 +103,7 @@ python scripts/catalog.py --check
 python -m unittest discover -s tests -v
 ```
 
-测试覆盖 52 条明确的路由情形，以及输入约束、资源边界、无项目写入、生成视图和单入口导出一致性。它们不是 52 次真实编码 Agent 对照实验。普通项目开发不需要运行本包测试。
+测试包含 52 条路由固定案例，以及接续优先、即时能力范围、失速解除、导出排除仓库元数据、输入约束与引用一致性检查。它们是分派程序的测试，不是真实编码 Agent 对照实验。普通项目开发不需要运行本包测试。
 
 生成单入口目录：
 
@@ -106,7 +111,7 @@ python -m unittest discover -s tests -v
 python scripts/export_single.py --output ../single-entry/invariant-first
 ```
 
-目标目录必须不存在。导出保留全部规则与路由功能，只改变子入口文件名和对应引用；导出物不作为第二套手工编辑源。
+目标目录必须不存在。导出保留全部规则与路由功能，改变子入口文件名和对应引用；同时排除版本库元数据与 Python 缓存，保留 `.gitignore` 等项目文件。导出物不作为第二套手工编辑源。这不是对任意源码树进行秘密扫描或清理的工具。
 
 ## 依据与效果边界
 

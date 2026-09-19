@@ -24,7 +24,7 @@
     ↓
 SKILL.md / RULES.md
     ↓
-route.py（或同源 MASTER-ROUTING）
+按 MASTER-ROUTING 直接选路（批量、集成或诊断时用 route.py）
     ↓
 PRIMARY + 已确认事实命中的 SUPPORT
     ↓
@@ -43,9 +43,9 @@ PRIMARY + 已确认事实命中的 SUPPORT
 
 原始文本规则使用命中规则的最高权重，并按 priority 解并列；返回候选与 `needs_intent_check`，不输出伪装成概率的置信度。明确 intent 和 sequence 优先，sequence 必须以当前 intent 开始。真实工程语义仍由调用 Agent 理解，脚本不声称解决任意语言或复杂否定的语义解析。
 
-SUPPORT 只由显式确认的布尔 facts 激活；文字线索仅进入 SUGGESTED_SUPPORT。一次默认加载最多两个专项，其余仍在 DEFERRED，触及对应边界前加载，不能当作免除。stage 只调整承诺倾向，不自动把成熟仓库的隔离实验变成兼容项目。
+SUPPORT 只由本次任务已确认的布尔 facts 激活；文字线索仅进入 SUGGESTED_SUPPORT。配置中的 specialists 顺序也是即时加载优先级：handoff 恢复上下文，recovery 恢复进展，然后处理领域问题；默认即时选择两个专项，其余留在 DEFERRED 并在触及对应边界前加载。LOAD_NOW 是阅读集合，不是自动执行队列。stage 只调整承诺倾向，不自动把成熟仓库的隔离实验变成兼容项目；临时事实解除后不保留旧专项。
 
-CAPABILITIES 仅表示任务需要和环境可用能力的差额；未知不等于不存在。路由程序不执行目标工具，因此也不构成权限防火墙。它不安装、不部署、不写工作目录、不改变模型设置、不创建后台任务。
+CAPABILITIES.preferred/missing 仅表示 PRIMARY 和即时专项的可用能力差额，deferred 单列后续专项独有的能力；未知不等于不存在，推荐能力不等于强制步骤。路由程序不执行目标工具，因此也不构成权限防火墙。它不安装、不部署、不写工作目录、不改变模型设置、不创建后台任务。
 
 ## 跨 harness 分发
 

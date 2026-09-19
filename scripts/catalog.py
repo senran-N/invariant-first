@@ -27,8 +27,10 @@ def render(cfg: dict) -> dict[str, str]:
     lines += ["", f"No useful text match: provisional `{cfg['fallback']}`; resolve from the user's goal, not guesswork.",
               "Use explicit `--intent` or the equivalent semantic choice; do not ask the user to choose a routing menu.", "",
               "## SUPPORT", "",
-              "Load only for confirmed facts. Text hints are suggestions, not facts.",
+              "Load only for confirmed, current-task facts. Text hints are suggestions, not facts.",
+              "Manifest order is load priority: restore context, recover progress, then handle domain boundaries.",
               f"Start with up to {cfg['max_support_now']} relevant specialists; remaining matches stay visible in DEFERRED.",
+              "Read LOAD_NOW before acting. Handoff/recovery restore the current PRIMARY, not a new project.",
               "Load a deferred specialist before working on its boundary; deferred does not mean waived.", "",
               "| ID | Confirmed facts | Open when needed | Action |",
               "| --- | --- | --- | --- |"]
@@ -39,6 +41,8 @@ def render(cfg: dict) -> dict[str, str]:
     lines += [f"- **{stage}**: {description}" for stage, description in cfg["stages"].items()]
     lines += ["", "## NEXT / CAPABILITIES", "",
               "NEXT is only the remaining user-requested sequence. It is never inferred as an authorization.",
+              "CAPABILITIES.preferred/missing covers PRIMARY + LOAD_NOW only; deferred lists later-only capabilities.",
+              "Capabilities describe useful tools, not compulsory workflow or permission to use them.",
               "Missing capabilities use [runtime](references/runtime.md); no auto-installation or model switching.",
               "Selection, instruction loading, implementation and observed execution remain separate facts.", ""]
     index = ["# INDEX", "", "Generated from `config/routing.json`. This is a map, not a reading checklist.", "",

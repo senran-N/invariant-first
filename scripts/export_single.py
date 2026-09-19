@@ -8,6 +8,7 @@ It never edits the source package and never calls a client or external service.
 from __future__ import annotations
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -23,10 +24,14 @@ def export(source: Path, destination: Path) -> Path:
         raise RoutingError("Export destination already exists; use a new, empty location")
     cfg = json.loads((source / "config/routing.json").read_text(encoding="utf-8"))
     validate_config(cfg, source)
-    for path in source.rglob("*"):
-        if path.is_symlink():
-            raise RoutingError("Export expects a self-contained package without symlinks")
-    shutil.copytree(source, destination, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    ignore = shutil.ignore_patterns(".git", ".hg", ".svn", "__pycache__", "*.pyc", ".pytest_cache")
+    for directory, dirs, files in os.walk(source, followlinks=False):
+        excluded = ignore(directory, dirs + files)
+        dirs[:] = [name for name in dirs if name not in excluded]
+        for name in dirs + [name for name in files if name not in excluded]:
+            if (Path(directory) / name).is_symlink():
+                raise RoutingError("Export expects a self-contained package without symlinks")
+    shutil.copytree(source, destination, ignore=ignore)
     mapping = {}
     for entry in cfg["routes"] + cfg["specialists"]:
         old = entry["path"]

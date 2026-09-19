@@ -14,13 +14,13 @@ Generated from `config/routing.json`. This is a map, not a reading checklist.
 | PRIMARY | evolve | [重构、迁移与转向](skills/if-evolve/SKILL.md) | read, search, edit, run |
 | PRIMARY | retire | [弃用、移除与退役](skills/if-retire/SKILL.md) | read, search, edit |
 | PRIMARY | document | [用户、接口与维护文档](skills/if-document/SKILL.md) | read, search, edit |
+| SUPPORT | handoff | [跨会话恢复与接手](skills/if-handoff/SKILL.md) | read |
 | SUPPORT | recovery | [打破无效循环](skills/if-recovery/SKILL.md) | read |
 | SUPPORT | state | [安全、状态与并发边界](skills/if-state/SKILL.md) | read |
 | SUPPORT | contracts | [真实兼容与迁移契约](skills/if-contracts/SKILL.md) | read |
 | SUPPORT | dependencies | [依赖与 API 事实](skills/if-dependencies/SKILL.md) | read, search |
 | SUPPORT | architecture | [表示、边界与修改落点](skills/if-architecture/SKILL.md) | read, search |
 | SUPPORT | interface | [真实交互而非界面空壳](skills/if-interface/SKILL.md) | read, interact |
-| SUPPORT | handoff | [跨会话恢复与接手](skills/if-handoff/SKILL.md) | read |
 
 ## Facts accepted by the router
 

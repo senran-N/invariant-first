@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "fallback": "build",
   "max_support_now": 2,
   "priority": [
@@ -350,6 +350,21 @@
   ],
   "specialists": [
     {
+      "id": "handoff",
+      "label": "跨会话恢复与接手",
+      "path": "skills/if-handoff/SKILL.md",
+      "when_any": [
+        "cross_session"
+      ],
+      "action": "从仓库恢复当前事实，只保留下一动作需要的接续信息。",
+      "capabilities": [
+        "read"
+      ],
+      "hints": [
+        "继续上次|新会话|交接|接手|resume|handoff|new session"
+      ]
+    },
+    {
       "id": "recovery",
       "label": "打破无效循环",
       "path": "skills/if-recovery/SKILL.md",
@@ -447,21 +462,6 @@
       ],
       "hints": [
         "界面|按钮|前端|交互|无障碍|frontend|button|interaction|accessibility"
-      ]
-    },
-    {
-      "id": "handoff",
-      "label": "跨会话恢复与接手",
-      "path": "skills/if-handoff/SKILL.md",
-      "when_any": [
-        "cross_session"
-      ],
-      "action": "从仓库恢复当前事实，只保留下一动作需要的接续信息。",
-      "capabilities": [
-        "read"
-      ],
-      "hints": [
-        "继续上次|新会话|交接|接手|resume|handoff|new session"
       ]
     }
   ]

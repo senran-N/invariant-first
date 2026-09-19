@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import importlib
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -73,6 +74,49 @@ class RouterTests(unittest.TestCase):
                 with self.assertRaises(RoutingError):
                     normalize_request(self.cfg, request)
 
+    def test_resume_context_is_not_deferred_behind_domain_work(self):
+        result = select_route(self.cfg, {
+            "task": "Continue the existing migration", "intent": "evolve",
+            "facts": {"cross_session": True, "stalled": True, "persisted_data": True}})
+        self.assertEqual([s["id"] for s in result["SUPPORT"][:2]],
+                         ["handoff", "recovery"])
+        self.assertEqual([s["id"] for s in result["DEFERRED"]],
+                         ["state", "contracts"])
+        self.assertEqual(result["route_id"], "evolve")
+
+    def test_deferred_capability_does_not_block_current_work(self):
+        result = select_route(self.cfg, {
+            "task": "Write the guide", "intent": "document",
+            "facts": {"persisted_data": True, "ui_change": True},
+            "capabilities": ["read", "search", "edit"]})
+        self.assertEqual([s["id"] for s in result["DEFERRED"]], ["interface"])
+        self.assertNotIn("interact", result["CAPABILITIES"]["preferred"])
+        self.assertEqual(result["CAPABILITIES"]["missing"], [])
+        self.assertEqual(result["CAPABILITIES"]["deferred"], ["interact"])
+
+    def test_resolved_blocker_leaves_no_stale_support(self):
+        first = select_route(self.cfg, {"task": "Complete feature", "intent": "build",
+                                      "facts": {"stalled": True}})
+        second = select_route(self.cfg, {"task": "Complete feature", "intent": "build",
+                                       "facts": {"stalled": False}})
+        self.assertEqual([s["id"] for s in first["SUPPORT"]], ["recovery"])
+        self.assertEqual(second["SUPPORT"], [])
+        self.assertEqual(second["route_id"], "build")
+
+    def test_export_does_not_ship_repository_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source"
+            shutil.copytree(ROOT, source,
+                            ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc"))
+            (source / ".git").mkdir()
+            config = source / ".git/config"
+            config.write_text("test-only repository metadata", encoding="utf-8")
+            (source / ".gitignore").write_text("*.pyc\n", encoding="utf-8")
+            dest = export(source, Path(tmp) / "export")
+            self.assertFalse((dest / ".git").exists())
+            self.assertTrue((dest / ".gitignore").is_file())
+            self.assertEqual(config.read_text(), "test-only repository metadata")
+
     def test_manifest_resource_boundaries(self):
         for value in ["../outside.md", "/etc/passwd", "C:/outside.md", "missing.md"]:
             with self.subTest(path=value):
@@ -120,6 +164,12 @@ class RouterTests(unittest.TestCase):
             for case in self.cases:
                 a = select_route(self.cfg, case["request"])
                 b = select_route(exported_cfg, case["request"])
+                adapted = json.dumps(a, ensure_ascii=False)
+                for entry in self.cfg["routes"] + self.cfg["specialists"]:
+                    old = entry["path"]
+                    new = str(Path(old).with_name("GUIDE.md")).replace("\\", "/")
+                    adapted = adapted.replace(old, new)
+                self.assertEqual(json.loads(adapted), b)
                 self.assertEqual(a["route_id"], b["route_id"])
                 self.assertEqual([s["id"] for s in a["SUPPORT"]], [s["id"] for s in b["SUPPORT"]])
                 self.assertTrue((dest / b["PRIMARY"]).is_file())
