@@ -1,0 +1,51 @@
+name: Validate skill package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validate:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Check source catalogs
+        run: python scripts/catalog.py --check
+      - name: Test source package
+        run: python -m unittest discover -s tests -v
+      - name: Export single-entry package
+        run: python scripts/export_single.py --output "$RUNNER_TEMP/runtime/invariant-first"
+      - name: Check runtime catalogs
+        working-directory: ${{ runner.temp }}/runtime/invariant-first
+        run: python scripts/catalog.py --check
+      - name: Test runtime package
+        working-directory: ${{ runner.temp }}/runtime/invariant-first
+        run: python -m unittest discover -s tests -v
