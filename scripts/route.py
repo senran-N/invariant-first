@@ -200,12 +200,12 @@ def select_route(cfg: dict[str, Any], raw: Any) -> dict[str, Any]:
                               "status": "text-hint-only; confirm relevant facts before loading"})
     # Prelude support restores context/progress and never consumes the domain-support budget.
     # This keeps handoff/recovery from pushing the actual engineering boundary out of LOAD_NOW.
-    preludes = [item for item in support if specialists_by_id(cfg)[item["id"]].get("phase", "domain") == "prelude"]
-    domains = [item for item in support if specialists_by_id(cfg)[item["id"]].get("phase", "domain") != "prelude"]
+    specialists = specialists_by_id(cfg)
+    preludes = [item for item in support if specialists[item["id"]].get("phase", "domain") == "prelude"]
+    domains = [item for item in support if specialists[item["id"]].get("phase", "domain") != "prelude"]
     limit = cfg["max_support_now"]
     load_support = preludes + domains[:limit]
     deferred_support = domains[limit:]
-    specialists = specialists_by_id(cfg)
     preferred = list(route["capabilities"])
     for selected in load_support:
         preferred.extend(cap for cap in specialists[selected["id"]]["capabilities"]
