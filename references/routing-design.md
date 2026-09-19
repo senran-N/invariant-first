@@ -24,7 +24,7 @@
     ↓
 SKILL.md / RULES.md
     ↓
-按 MASTER-ROUTING 直接选路（批量、集成或诊断时用 route.py）
+按根入口方法地图选路（条件查 MASTER-ROUTING，机器分派用 route.py）
     ↓
 PRIMARY + 已确认事实命中的 SUPPORT
     ↓
@@ -39,7 +39,7 @@ PRIMARY + 已确认事实命中的 SUPPORT
 
 ## 单一事实源与职责
 
-`routing.json` 保存路径、条件、优先级、目标和能力清单；`route.py` 只解释它并打印结果，不维护第二张路由表。`catalog.py` 生成 MASTER-ROUTING 和 INDEX，`--check` 检测漂移。每个子技能只定义自己的操作，不重新全局分类。
+`routing.json` 保存路径、条件、优先级、目标和能力清单；`route.py` 只解释它并打印结果，不维护第二张路由表。`catalog.py` 生成 MASTER-ROUTING、INDEX 及根 SKILL.md 标记区内的方法地图，`--check` 同时检测三者漂移。根入口的其他正文仍手工维护，生成器不重写它们。每个子技能只定义自己的操作，不重新全局分类。
 
 原始文本规则使用命中规则的最高权重，并按 priority 解并列；返回候选与 `needs_intent_check`，不输出伪装成概率的置信度。明确 intent 和 sequence 优先，sequence 必须以当前 intent 开始。真实工程语义仍由调用 Agent 理解，脚本不声称解决任意语言或复杂否定的语义解析。
 
@@ -47,11 +47,17 @@ SUPPORT 只由本次任务已确认的布尔 facts 激活；文字线索仅进�
 
 CAPABILITIES.preferred/missing 仅表示 PRIMARY 和即时专项的可用能力差额，deferred 单列后续专项独有的能力；未知不等于不存在，推荐能力不等于强制步骤。路由程序不执行目标工具，因此也不构成权限防火墙。它不安装、不部署、不写工作目录、不改变模型设置、不创建后台任务。
 
+## 语义选择与资源寻址
+
+目标选择需要判断，已登记的资源身份则直接查表。根入口用当前清单的 ID、label、path 生成链接；导出时从转换后的清单重新生成。语义不变而存储位置改变时，方法选择不变，读取位置随登记改变。不为每个猜错的名称增加别名或占位文件。
+
+[Cursor 社区的云环境路径报告](https://forum.cursor.com/t/wrong-path-when-loading-plugin-skills-into-cloud-environments/162848)中，支持人员确认资源 Read 可用而把同一引用当 shell 路径会失败；[Claude Code 的相对路径报告](https://github.com/anthropics/claude-code/issues/17741)描述了猜错基准目录的情况。这些材料不证明用户本机问题的根因，但说明资源引用需要与当前读取机制配套。[CPython v3.12.0 的 files / from_package](https://github.com/python/cpython/blob/v3.12.0/Lib/importlib/resources/_common.py)通过实际模块和 loader 获取资源容器，而不是从工作目录猜测安装位置。本包借鉴这种显式基准与资源解析的责任划分，不要求宿主安装 Python 资源框架。
+
 ## 跨 harness 分发
 
 规范入口与语义能力保持中立；原生客户端是否递归发现子技能各不相同，所以路由器直接读取所选路径，不依赖子 Agent 或跨 Skill 调用 API。
 
-canonical 包有一个总入口和独立子技能入口；single-entry 导出由同一源码自动将子入口转换为 GUIDE.md 并重写引用，适合只接受一个 SKILL.md 的导入器。两个版本不能手工分叉维护。
+canonical 包有一个总入口和独立子技能入口；默认运行时 single-entry 导出将子入口转换为 GUIDE.md，重写引用并重新生成根方法地图。两个版本不能手工分叉维护。
 
 ## 上游对应文件
 

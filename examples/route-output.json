@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "config_version": "2.1.6",
+  "config_version": "2.1.7",
   "task": "修复线上已缓解的重复写入 bug，然后准备修复版本安装包；不执行公开部署。",
   "route_id": "fix",
   "PRIMARY": "skills/if-fix/SKILL.md",

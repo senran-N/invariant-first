@@ -15,7 +15,7 @@ import shutil
 import sys
 from pathlib import Path
 from route import ROOT, RoutingError, validate_config
-from catalog import render
+from catalog import render, render_entrypoint
 
 
 def export(source: Path, destination: Path) -> Path:
@@ -55,6 +55,8 @@ def export(source: Path, destination: Path) -> Path:
         json.dumps(cfg, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     for name, content in render(cfg).items():
         (destination / name).write_text(content, encoding="utf-8")
+    entrypoint = destination / "SKILL.md"
+    entrypoint.write_text(render_entrypoint(cfg, entrypoint.read_text(encoding="utf-8")), encoding="utf-8")
     (destination / "EXPORT.md").write_text(
         "# Single-entry runtime export\n\nGenerated from the canonical source package. Only the root SKILL.md is discoverable; "
         "specialists are relative GUIDE.md resources with unchanged instructions. "

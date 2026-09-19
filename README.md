@@ -14,7 +14,7 @@
 使用 invariant-first 实现这个功能。保持现有 CLI 行为，完成代码和真实用法。
 ```
 
-[总入口](SKILL.md) 读取共同判断，按目标打开对应子技能并执行。普通任务直接读取方法即可；路由脚本用于批量分派、集成或诊断。小改不需要加载整个目录。
+[总入口](SKILL.md) 内置从清单生成的方法地图：按目标选方法，按登记链接打开真实文件。路径相对于安装的根入口，不是项目工作目录。普通任务不必运行路由脚本，也不必先读完整分流表。
 
 源码包保留独立子技能入口，便于维护、测试与需要显式寻址的宿主；**默认运行时分发使用单入口版**，把子入口同源导出为 `GUIDE.md`，避免递归扫描器绕过根路由或保留已删除子技能的发现记录。两种形态都需要宿主能读取相对资源。
 
@@ -56,7 +56,7 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 [AGENTS.md](AGENTS.md) 说明改进方法与修改落点：从原始反馈和成熟实现提炼因果关系，优先合并已有判断。共同规则维护一处，子技能保留独有行动；来源在 [机制归纳](references/ai-coding-pain-points.md)、[源码依据](references/source-lessons.md) 和 [文档方法](references/documentation.md)，不进入日常默认上下文。
 
-路由配置的唯一来源是 `config/routing.json`；修改后生成视图并检查：
+路由配置只在 `config/routing.json` 维护；修改后生成根入口的方法地图、MASTER-ROUTING 与 INDEX：
 
 ```sh
 python scripts/catalog.py

@@ -62,12 +62,36 @@ def render(cfg: dict) -> dict[str, str]:
     return {"MASTER-ROUTING.md": "\n".join(lines), "INDEX.md": "\n".join(index)}
 
 
+
+ROUTE_MAP_START = "<!-- BEGIN ROUTE MAP -->"
+ROUTE_MAP_END = "<!-- END ROUTE MAP -->"
+
+
+def render_entrypoint(cfg: dict, text: str) -> str:
+    """Refresh only the root entrypoint's resource map, preserving authored prose."""
+    if text.count(ROUTE_MAP_START) != 1 or text.count(ROUTE_MAP_END) != 1:
+        raise RoutingError("SKILL.md needs exactly one route-map marker pair")
+    before, _, rest = text.partition(ROUTE_MAP_START)
+    if ROUTE_MAP_END not in rest:
+        raise RoutingError("SKILL.md route-map markers are out of order")
+    _, _, after = rest.partition(ROUTE_MAP_END)
+    lines = ["Generated from `config/routing.json`.", "",
+             "| Role | ID | Method |", "| --- | --- | --- |"]
+    for group, entries in [("PRIMARY", cfg["routes"]), ("SUPPORT", cfg["specialists"])]:
+        for entry in entries:
+            role = group if group == "PRIMARY" else entry.get("phase", "domain").upper()
+            lines.append(f"| {role} | {entry['id']} | [{cell(entry['label'])}]({entry['path']}) |")
+    return before + ROUTE_MAP_START + "\n" + "\n".join(lines) + "\n" + ROUTE_MAP_END + after
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Fail on drift, without writing")
     args = parser.parse_args()
     try:
-        outputs = render(load_config())
+        cfg = load_config()
+        outputs = render(cfg)
+        outputs["SKILL.md"] = render_entrypoint(cfg, (ROOT / "SKILL.md").read_text(encoding="utf-8"))
         drift = []
         for name, content in outputs.items():
             path = ROOT / name
