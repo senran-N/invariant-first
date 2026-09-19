@@ -35,4 +35,4 @@ description: 新会话接手、上下文将切换或跨多轮的长任务需要�
 
 下一位可以从真实文件接着做，不必重构你的聊天意图。一个功能完成不是整个项目完成，交接也不是故意提前结束可继续执行的任务。
 
-依据：[痛点 P3 与来源 A1、A3](../../references/ai-coding-pain-points.md)。它是可移植的接续方法，不要求特定 memory 工具、自动压缩机制或后台 Agent。
+依据：[接续依据 A1、A3](../../references/ai-coding-pain-points.md)。它是可移植的接续方法，不要求特定 memory 工具、自动压缩机制或后台 Agent。

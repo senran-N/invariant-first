@@ -19,4 +19,4 @@ description: 新增、升级或替换依赖，或使用尚未核实的 API 时�
 
 实际版本中的调用成立，依赖来源清楚，项目入口与锁定方式一致。回到原 PRIMARY，不为包管理额外建平台。
 
-依据：[痛点 P4 与来源 A5](../../references/ai-coding-pain-points.md)。包幻觉是研究中观察到的风险；本 Skill 不保证能自动识别所有恶意依赖。
+依据：[依赖事实与来源 A5](../../references/ai-coding-pain-points.md)。包幻觉是研究中观察到的风险；本 Skill 不保证能自动识别所有恶意依赖。

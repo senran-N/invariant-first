@@ -1,95 +1,41 @@
-# AI 编码痛点 → 可执行纠偏
+# 从使用反馈提炼工程机制
 
-研究核查：2026-09-19。下列证据来自第一方开发者调查、官方工程案例与研究论文，不把网络吐槽当发生率。纠偏规则是本包的设计选择，不是已经完成的模型效果实验；调查是自报告，预印本和观察研究不建立普遍因果结论。
+本文件是维护依据，不是执行时逐条匹配的故障表。行动以 [共同判断](../RULES.md) 和当前子技能为准。论坛观察用于提出疑问，项目源码用于理解机制；二者都不能独立证明某条提示对所有模型有效。
 
-## P1 · 看起来快完成，核心路径却没接通
+## 已有材料怎样归并
 
-**观察。** Stack Overflow 2025 调查的 AI 困扰题（31,476 份回答，多选）中，66% 选择“答案接近正确但仍不对”，45% 选择调试 AI 代码更费时 [A6]。这是受访者体验，不是所有 AI 输出的错误率。Anthropic 的长任务案例也报告过提前宣布完成、界面存在但关键交互没有实现的问题 [A1–A2]。
+| 共同判断 | 材料提供的线索 | 当前方法 |
+| --- | --- | --- |
+| 由目标决定行动 | 越界、意图误读和流程挤占目标；A7–A8 | 主路线约束交付与操作范围，专项只补判断 |
+| 表示与责任 | 正确文件中仍可能选错修改层；A4、成熟实现 | 追事实与保证的归属，在责任处修改 |
+| 在边界内完成变化 | 半成品、遗漏相关行为和遗留路径；A1–A2、既有现场材料 | 贯通真实入口，区分变化与保留，完成切换 |
+| 保护与事实 | 包/API 假设、状态和依赖风险；A5、成熟实现 | 当前版本与真实边界决定动作，不从名称猜测 |
+| 有区分力的反馈 | 自报结果、无信息循环和自评局限；A1、A4、A7、A11 | 实际执行目标逻辑，以独立预期修正实现 |
+| 产品事实与接续 | 跨会话遗漏、文档膨胀及过时约束；A1、A3、A9–A10 | 短入口指向权威位置，知识按责任存放 |
 
-**动作。** build 接通真实入口，interface 完成用户动作，release 检查真正分发的产物。结果区分实现、运行、集成和发布；不额外设置空洞的“完成检查报告”。
+原始 [现场材料](field-notes-2026-09-19.md) 与 [源码样本](source-lessons.md) 保留核查坐标；它们不是新增禁令的模板。模型、框架和故事名从执行判断中去掉，不影响真正必要的语义与风险差异。
 
-## P2 · 找对文件，改错责任层
+## 本轮归纳依据 · 2026-09-19
 
-**观察。** 2026 年预印本《Beyond Resolution Rates》分析 9,374 条轨迹、19 个 Agent、500 个 SWE-bench Verified 任务；其对 12 个简单补丁却始终未解出的任务做的定性分析中，10 个表现为架构层级判断问题 [A4]。例如在显示后端修改症状，而非在序列化处修正不应持久化的值。这是特定 Python 基准和小型子样本，不代表所有失败都属于此类。
+**社区线索。** [Cursor 讨论](https://forum.cursor.com/t/why-does-cursor-ignore-rules/137219) 中用户报告规则未得到遵循；后续一位用户表示处理格式与冲突后情况改善，不能据此断言所有失效都由规则长度造成。[V2EX 讨论](https://www.v2ex.com/amp/t/1119929) 描述维护已有结构的困难，以及提示要求增多后产生额外抽象的体验。这些是个体观察，不作为发生率或对某模型的普遍结论。
 
-**动作。** architecture 追踪数据生产、转换与消费责任；fix 修最早失真的事实，不让每个消费者添加 fallback。结构改动围绕同一根因，不能因此重写无关系统。
+**成熟机制。** Linux `v6.12` 的 [list.h](https://github.com/torvalds/linux/blob/v6.12/include/linux/list.h) 用表头自环表示空链表，添加与删除围绕相邻节点关系；同文件仍保留硬化检查。借鉴的是用表示统一操作，不是删除保护。Go `go1.23.2` 的 [io.go](https://github.com/golang/go/blob/go1.23.2/src/io/io.go) 用 Reader/Writer 契约表达复制，`copyBuffer` 可委托 WriterTo/ReaderFrom，也保留通用路径及错误处理。它仍包含具体优化；借鉴的是以共同契约组织真实差异，不是禁止特化实现。两者均为协作项目的版本样本，不将每行代码归为创始人独作。
 
-## P3 · 上下文越长越乱，换会话又重新猜
+**设计取舍。** John Ousterhout 的 [CS190 讲义](https://web.stanford.edu/~ouster/cs190-winter22/lectures/intro/) 将依赖、不一致和特殊情况列为复杂性的来源，讨论消除/隐藏复杂性与增量设计。这里只借鉴理解和修改成本的判断，不照搬课程评分取舍。
 
-**观察。** Anthropic 官方案例讨论了跨上下文会话的半成品、重复定位与过早结束；上下文工程文章说明应按需取信息并留下稳定接续材料 [A1、A3]。这些是特定系统中的工程经验，不证明某个固定日志模板对所有模型最优。
+**本包推导。** 将个案合并为目标、表示、边界、反馈与知识归属的判断；同一因果关系只维护一处，专项保留独有动作。检验新规则时既换场景看迁移，也改条件看能否正确区别。收敛不能变成“永远最短”或“永远不加抽象”。这是设计选择，效果仍需 [行为对照](evaluation.md)。
 
-**动作。** 路由仅加载当前 PRIMARY 和实际需要的 SUPPORT。handoff 核对当前文件，保留目标、真实进度、关键决定、最近反馈与下一动作；稳定事实回到代码或文档，不复制整段聊天，不强制每次小改记日志。
+## 继承材料的来源与边界
 
-## P4 · 虚构包、API 或当前版本不支持的用法
+A 编号用于保留已有来源坐标，不对应新增问题条目。旧材料不是本轮重新运行的实验；本轮直接复核的网页与源码在上节。
 
-**观察。** USENIX Security 2025 的包幻觉研究在 16 个模型、576,000 个 Python/JavaScript 代码样本上观察到不存在的包名及其供应链风险 [A5]。不要把研究中的历史模型比例当成 2026 年所有模型的实时水平。
-
-**动作。** dependencies 先看锁文件、已装版本的类型/源码和真实同类调用；新增包还核对官方来源与登记身份。不能因为某包名现在能搜到，就把它当成原本想使用的可信项目。环境受阻走 runtime，不删除锁文件反复重装。
-
-## P5 · 擅自扩大范围、忽略明确约束、过度防御
-
-**观察。** 2026 年预印本《How Coding Agents Fail Their Users》观察了来自 1,639 个仓库的 20,574 场会话，用开发者的纠正识别失配；它区分了约束违反、意图误读、越界和代码错误，并记录了对已验证数据继续叠加检查的实例 [A7]。公开日志不含所有背景，依赖开发者反馈的识别也会遗漏未被指出的问题。
-
-**动作。** 先确定交付物和授权；read-only review、document 与实际部署分开。自主决定可逆内部选择不等于扩张需求。共同规则要求 guard 有责任和实际失败依据，contracts 只为真实消费者加载。
-
-## P6 · 工具用错、反复失败，却没有新信息
-
-**观察。** 上述会话研究包括路径、环境与目标选择错误 [A7]；轨迹研究显示动作顺序与结果有关，也强调长轨迹不能简单等同于失败，任务难度和模型是混杂因素 [A4]。
-
-**动作。** recovery 不按固定尝试次数强行放弃，而是在反馈重复、没有新信息时换观测；确认实际目录、目标与版本，缩小复现，追事实生产处。它保留原 PRIMARY，不重启整个任务、不回滚用户工作。
-
-## P7 · 过度搜索、流程堆叠与提示冲突
-
-**观察。** OpenAI 的 GPT-5 提示指南描述过过强上下文搜集要求导致重复搜索，以及互相冲突的指令妨碍任务推进的案例 [A8]。这支持避免矛盾和无边界调查，但不是取消必要阅读、测量或检查的证据。
-
-**动作。** 明确目标、一个 PRIMARY、有限即时加载、其余按边界读取。找到足以行动的信息就实现；继续调查必须能改变决定。没有默认 plan/review Agent、阶段数据库、全仓审计或强制红绿重演。
-
-## P8 · 自报完成不可靠，文档与事实逐渐分叉
-
-**观察。** 会话研究把不准确自报单独分类，包含把部分实现和未证实状态说成完成 [A7]；官方长任务案例同样指出完成判断问题 [A1]。文档漂移和测试弱化在本包中作为工程风险处理，不据此捏造其总体发生率。
-
-**动作。** DONE 是具体成果，不是写了报告。一个规则一个权威位置，调用和文档同改。禁止删除预期、把替身当集成、把未运行当通过；经验回流只写有条件、有依据、可失效的教训。
-
-## P9 · 仓库对 Agent 不可读，规则越堆越多
-
-**观察。** OpenAI 在 2026 年的 harness engineering 案例中报告：把大量指导塞进一个巨型 `AGENTS.md` 会挤占任务上下文、让所有规则都像“同样重要”、快速腐化且难以机械验证；团队后来改成短入口加结构化仓库知识库，并把“agent legibility”作为设计目标 [A9]。同一案例还把重复的坏模式视为需要持续“垃圾回收”的仓库熵，而不是靠一次大清理解决。
-
-**动作。** 本包要求入口做地图、事实留在最近的权威位置；重复 Agent 失败优先修代码表示、仓库说明或工具边界，而不是继续扩大全局提示。维护本包时删除失效规则，与新增规则同样重要。
-
-## P10 · Harness 会替旧模型保留过时的拐杖
-
-**观察。** Anthropic 在 2026 年 Managed Agents 文章中明确指出，harness 会编码“模型做不到什么”的假设，而模型能力变化后这些假设会过时；其例子是早期为 context anxiety 增加的上下文重置，在后续模型上不再总是必要 [A10]。这不意味着所有恢复机制都应删除，而是说明约束需要持续证明其净收益。
-
-**动作。** 每条全局规则必须能指出具体失败模式、触发条件和行动差异。能力提升或仓库结构已经消除原问题时，收缩或删除规则；不要把过去一次模型失败永久升级为所有任务的前置流程。
-
-## P11 · 自评容易偏乐观，尤其是主观质量
-
-**观察。** Anthropic 的 2026 年长任务 harness 案例报告，生成者自评时常倾向肯定自己的产物，主观设计任务尤其明显；把生成与评价分离后更容易得到有用的批评反馈 [A11]。这是特定 harness 的工程结果，不证明每个任务都需要额外 Agent。
-
-**动作。** review 对主观质量先用明确可观察标准，而不是“看起来不错”。宿主已经有独立 reviewer/evaluator 且任务价值足够时可利用；普通修改不因此强制多 Agent 或增加评审仪式。
-
-## P12 · 被否决的方案留下“语言残影”
-
-**观察。** 本项目的实际使用反馈指出一种很典型的 Agent 失配：模型擅自加入无关能力，被用户否决后虽然删除实现，却在 PR 标题、注释和文档里持续强调“没有加入该能力”，把一次聊天纠正永久变成仓库语境。这一条是项目观察，不宣称已有总体发生率研究。
-
-**动作。** 采用“无残影”规则：没有长期约束意义的被否决方案，连实现、命名、注释、文档和专门测试措辞一起消失。只有协议、安全、兼容或已确认事故等稳定依据确实需要阻止未来重犯时，才保留负面约束；记录当前原因与边界，不记录对话过程。
-
-## 社区反馈的具体落点
-
-[2026-09-19 现场材料](field-notes-2026-09-19.md) 对照 Cursor、V2EX、Claude Code issue 与 Hacker News 的原始反馈，以及 Git、Go、Django、Linux 的历史源码与说明。集中处理机械移动被重写、重构丢语义、新入口绕过已有责任、注释与变更说明复述聊天；自报告和推广帖与可检查的项目机制分别标明。
-
-## 来源
-
-- **A1** Anthropic, Effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
-- **A2** Anthropic, Harness design for long-running application development: https://www.anthropic.com/engineering/harness-design-long-running-apps
-- **A3** Anthropic, Effective context engineering for AI agents: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
-- **A4** Beyond Resolution Rates: Behavioral Drivers of Coding Agent Success and Failure，2026 年预印本：https://arxiv.org/html/2604.02547
-- **A5** Spracklen et al., We Have a Package for You!, USENIX Security 2025: https://www.usenix.org/conference/usenixsecurity25/presentation/spracklen
-- **A6** Stack Overflow 2025 Developer Survey, AI section: https://survey.stackoverflow.co/2025/ai
-- **A7** How Coding Agents Fail Their Users，2026 年预印本 v2：https://arxiv.org/html/2605.29442v2
-- **A8** OpenAI, GPT-5 prompting guide: https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide
-- **A9** OpenAI, Harness engineering: leveraging Codex in an agent-first world: https://openai.com/index/harness-engineering/
-- **A10** Anthropic, Scaling Managed Agents: Decoupling the brain from the hands: https://www.anthropic.com/engineering/managed-agents
-- **A11** Anthropic, Harness design for long-running application development: https://www.anthropic.com/engineering/harness-design-long-running-apps
-
-没有在真实项目上用同一模型和相同预算做对照前，不宣称这些规则已降低回归率、提升开发速度，或让所有 harness 产生相同效果。路由器的结构测试只能证明分派实现符合本包定义。
+- **A1** [Anthropic：长任务 harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)。特定系统的工程经验。
+- **A2 / A11** [Anthropic：长任务应用开发](https://www.anthropic.com/engineering/harness-design-long-running-apps)。实现与评价方法，不推出每项任务都要多 Agent。
+- **A3** [Anthropic：上下文工程](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)。按需上下文与接续方法。
+- **A4** [Beyond Resolution Rates](https://arxiv.org/html/2604.02547)。特定基准的轨迹分析与小样本定性发现，不代表总体根因分布。
+- **A5** [USENIX 2025：We Have a Package for You!](https://www.usenix.org/conference/usenixsecurity25/presentation/spracklen)。历史模型的包幻觉研究，不作为当前发生率。
+- **A6** [Stack Overflow 2025 调查](https://survey.stackoverflow.co/2025/ai)。受访者自报告，不是输出错误率。
+- **A7** [How Coding Agents Fail Their Users](https://arxiv.org/html/2605.29442v2)。公开会话和用户纠正的观察研究，有采样与遗漏限制。
+- **A8** [OpenAI：GPT-5 提示指南](https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide)。特定模型的提示案例，不构成普适流程。
+- **A9** [OpenAI：Harness engineering](https://openai.com/index/harness-engineering/)。仓库可读性与知识组织的工程案例。
+- **A10** [Anthropic：Managed Agents](https://www.anthropic.com/engineering/managed-agents)。harness 假设随能力变化的工程讨论。

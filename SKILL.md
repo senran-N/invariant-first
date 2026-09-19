@@ -33,14 +33,13 @@ PRIMARY 决定目标；SUPPORT 分两类：handoff/recovery 是 prelude，只恢
 ## 目标不被方法抢走
 
 - “修 bug，必要时重构”仍是 fix；“保持行为替换实现”是 evolve；“写事故手册”是 document；“审查迁移”是 review，不执行迁移。
-- 无真实旧依赖的预览直接完成核心，不造兼容平台；已有消费者或持久数据就守住受影响契约。安全跟暴露面走，不跟版本标签走。
 - 主目标未变就继续实现。只有新的具体困难才补方法，不反复分诊、重做计划或重开架构项目。
-- 真正复用的经验按 [experience](experience/README.md) 回到项目的权威位置；不自动改全局 Skill，不把一次猜想写成永久禁令，不靠聊天历史保持正确性。
+- 新情况按 [共同判断](RULES.md) 的因果关系处理：相同责任迁移方法，实际条件不同则调整动作，不因故事相似照抄答案。知识需要保留时见 [experience](experience/README.md)。
 
 ## 一个配置源，按需读取
 
 [routing.json](config/routing.json) 是路由唯一事实源；[MASTER-ROUTING](MASTER-ROUTING.md) 与 [INDEX](INDEX.md) 从它生成。子技能负责 ACTION 与完成条件。覆盖整个生命周期不等于每次读完整个目录。
 
-安装见 [portability](references/portability.md)；机制见 [routing-design](references/routing-design.md)；依据见 [pain-points](references/ai-coding-pain-points.md)、[source-lessons](references/source-lessons.md) 与 [documentation](references/documentation.md)。维护本包才读 [AGENTS](AGENTS.md) 和 [evaluation](references/evaluation.md)，它们不是普通开发的前置步骤。
+安装见 [portability](references/portability.md)；机制见 [routing-design](references/routing-design.md)；依据见 [机制归纳](references/ai-coding-pain-points.md)、[source-lessons](references/source-lessons.md) 与 [documentation](references/documentation.md)。维护本包才读 [AGENTS](AGENTS.md) 和 [evaluation](references/evaluation.md)，它们不是普通开发的前置步骤。
 
 这不是安全沙箱或模型参数修改。宿主负责权限与执行；单入口导出仍需读取相对资源，不具备读取能力的宿主必须预展开适用指令，不能冒充自动按需加载。
