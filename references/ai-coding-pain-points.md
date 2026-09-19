@@ -29,6 +29,14 @@
 
 **副作用看资源身份，异步结果看发布时前提。** [Cursor 的数据丢失报告](https://forum.cursor.com/t/include-gitignore-ed-files-in-checkpoint/165652/5) 中，Agent 写出的集成测试把测试服务指向真实运行数据目录，测试框架的 reset 语义因此删除了真实数据；风险来自资源身份与副作用，而不是 `test` 命令本身。[Claude Code 的后台任务报告](https://github.com/anthropics/claude-code/issues/79354) 则描述了后台任务在 Agent 已继续编辑后晚到，把较新的文件状态覆盖掉。两个案例都只是用户报告。Git 的测试框架把测试运行在独立 trash directory，并有专门用例确保路径写入不能逃出工作树；Kubernetes 用 `resourceVersion` 让基于过期对象的更新返回冲突。借鉴的是：有破坏性的测试先隔离真实资源；异步/并发结果发布前确认它仍基于当前状态。锁只能解决同时写入，若“晚到但已过期”也有风险，还需要版本、前置条件、隔离产物后比较或重新读取；不存在这些风险时，不加额外协调层。
 
+**简单性要减少需要共同理解的知识，不只减少代码量。** [V2EX 的“AI 编程后，我更累了”](https://edge.v2ex.com/t/1192730) 中，作者及部分评论描述生成提速之后理解、裁剪与审查负担增加；也有评论将疲劳归因于任务增加，不能把讨论当成统一因果结论。[Armin Ronacher 的 The Final Bottleneck](https://lucumr.pocoo.org/2026/2/13/the-final-bottleneck/) 讨论生成与审查吞吐失衡，[Simon Willison 的亲身体验](https://simonwillison.net/2026/Feb/15/cognitive-debt/) 则描述跳过实现阅读后失去项目心智模型。共同线索是维护者需要理解的关系没有随生成成本下降，而不是“AI 代码一律冗长”。
+
+对照 `karpathy/micrograd` 的 `c911406` 与 Go `go1.23.2`：前者将教育目标收在紧凑计算图内，并在 [test_engine.py](https://github.com/karpathy/micrograd/blob/c911406/test/test_engine.py) 用 PyTorch 比较前向值和梯度；后者的 [strings.Builder](https://github.com/golang/go/blob/go1.23.2/src/strings/builder.go) 将缓冲区保持私有，以 `copyCheck` 检测非零 Builder 的值复制，`Reset` 丢弃底层缓冲区引用。两者不是同一种文件规模或抽象形状，借鉴的是用表示与所有权收住知识，并让调用者少承担隐含步骤；不照搬 unsafe 实现、教育项目的风险假设或历史编译器 workaround。落实到 RULES、architecture 与知识交接：沿真实调用和变化比较理解成本，而非设行数上限、统一禁止抽象或增加解释文档来掩盖耦合。
+
+**验证的价值是分辨对错，不是产出绿色信号。** [Jesse Vincent 的测试删除回忆](https://blog.fsck.com/2026/04/30/that-time-it-tried-to-delete-all-my-tests/) 描述 Agent 为消除失败而删除断言和测试；作者没有保留会话日志，模型事后给出的解释也不能证明心理状态或训练原因。该经验提示需要审视“字面达标却没有完成目标”的空间，但不采用“测试数量或覆盖率只能增长”的通则。
+
+对照 [SQLite 测试说明的 mutation testing](https://sqlite.org/testing.html#mutation_testing) 与 `version-3.46.1` 的 [malloc_common.tcl](https://github.com/sqlite/sqlite/blob/version-3.46.1/test/malloc_common.tcl)：前者区分执行过分支与能够发现分支行为被改变，并说明仅影响速度的分支可能造成误判；后者将故障注入的执行与后续检查分开，提供完整性检查。结合 micrograd 的独立参考，提炼为“目标错误仍在时，这个观测会不会揭露它”。这是按风险选择复现、独立预期或隔离对照的判断，不是让每次小改都跑变异测试、禁止替身、禁止删除过时测试或复刻数据库测试平台。指令变化尚未接受模型对照评估。
+
 ## 继承材料的来源与边界
 
 A 编号用于保留已有来源坐标，不对应新增问题条目。旧材料不是本轮重新运行的实验；本轮直接复核的网页与源码在上节。

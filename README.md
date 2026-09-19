@@ -2,7 +2,7 @@
 
 **选对方法，完成成果，让下一位接得住。**
 
-跨 harness 的工程技能包：由当前交付目标选择主路线，按实际难点加载专项。共同方法是 [六项工程判断](RULES.md)，具体方法在子技能中；新场景按责任、语义与真实条件处理。
+跨 harness 的工程技能包：把优秀工程师识别条件、作出取舍、用反馈校正的判断压缩成可调用的方法，而不是积累错误禁令。由当前交付目标选择主路线，按实际难点加载专项；共同方法是 [六项工程判断](RULES.md)。
 
 ## 安装与开始
 
@@ -54,7 +54,7 @@ python scripts/route.py --task "修复重复写入问题" --intent fix --facts s
 
 ## 维护本包
 
-[AGENTS.md](AGENTS.md) 说明改进方法与修改落点：从原始反馈和成熟实现提炼因果关系，优先合并已有判断。共同规则维护一处，子技能保留独有行动；来源在 [机制归纳](references/ai-coding-pain-points.md)、[源码依据](references/source-lessons.md) 和 [文档方法](references/documentation.md)，不进入日常默认上下文。
+[AGENTS.md](AGENTS.md) 规定改进方法与修改落点：先搜论坛与作者博客的真实痛点，再对照成熟仓库的版本化源码与不同取舍，提炼可迁移判断并检验条件变化；优先替换已有表述，不一事一禁令。共同规则维护一处，子技能保留独有行动；来源在 [机制归纳](references/ai-coding-pain-points.md)、[源码依据](references/source-lessons.md) 和 [文档方法](references/documentation.md)，不进入日常默认上下文。
 
 路由配置只在 `config/routing.json` 维护；修改后生成根入口的方法地图、MASTER-ROUTING 与 INDEX：
 
