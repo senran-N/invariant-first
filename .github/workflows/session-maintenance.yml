@@ -1,0 +1,51 @@
+name: One-time merged branch cleanup
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/session-maintenance.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    if: github.repository == 'senran-N/invariant-first' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - name: Preserve the inspected source snapshot
+        run: git archive --format=zip --prefix=invariant-first/ --output="$RUNNER_TEMP/invariant-first-base.zip" 312593ad71a87453abdcf920707856ee5f0df678
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: invariant-first-baseline
+          path: ${{ runner.temp }}/invariant-first-base.zip
+          retention-days: 1
+          if-no-files-found: error
+      - name: Delete only the unchanged branch from merged PR 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='d21af4fd7471d85707f9195a5adc49d5d28a4b3e'
+          branch='improve/router-phases-2.1.0'
+          gh api repos/senran-N/invariant-first/pulls/1 > "$RUNNER_TEMP/merged-pr.json"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          pr = json.loads((Path(os.environ['RUNNER_TEMP']) / 'merged-pr.json').read_text())
+          assert pr['merged'] is True
+          assert pr['base']['ref'] == 'main'
+          assert pr['head']['ref'] == 'improve/router-phases-2.1.0'
+          assert pr['head']['sha'] == 'd21af4fd7471d85707f9195a5adc49d5d28a4b3e'
+          assert pr['merge_commit_sha'] == '841283f7b7d5ef9b2170a77813380fe25dcc82d6'
+          PY
+          git merge-base --is-ancestor 841283f7b7d5ef9b2170a77813380fe25dcc82d6 HEAD
+          git push --force-with-lease="refs/heads/$branch:$expected" origin ":refs/heads/$branch"
