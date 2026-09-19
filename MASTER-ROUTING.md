@@ -27,20 +27,20 @@ Use explicit `--intent` or the equivalent semantic choice; do not ask the user t
 ## SUPPORT
 
 Load only for confirmed, current-task facts. Text hints are suggestions, not facts.
-Manifest order is load priority: restore context, recover progress, then handle domain boundaries.
-Start with up to 2 relevant specialists; remaining matches stay visible in DEFERRED.
+Prelude specialists restore context or progress first and do not consume the domain-support budget.
+Then load up to 2 confirmed domain specialists; remaining domain matches stay visible in DEFERRED.
 Read LOAD_NOW before acting. Handoff/recovery restore the current PRIMARY, not a new project.
 Load a deferred specialist before working on its boundary; deferred does not mean waived.
 
-| ID | Confirmed facts | Open when needed | Action |
-| --- | --- | --- | --- |
-| handoff | 需要恢复上下文或接续长任务 | [跨会话恢复与接手](skills/if-handoff/SKILL.md) | 从仓库恢复当前事实，只保留下一动作需要的接续信息。 |
-| recovery | 尝试已重复且没有新信息; 工具、依赖或执行环境阻塞 | [打破无效循环](skills/if-recovery/SKILL.md) | 停止重复失败动作，找一个能区分原因的新观测并换方法。 |
-| state | 涉及需要保留或迁移的持久数据; 存在共享可变状态或并发更新; 涉及外部写入或不可重复副作用; 触及外部不可信输入; 改变身份、权限或秘密处理 | [安全、状态与并发边界](skills/if-state/SKILL.md) | 明确保证建立的位置、原子转移和部分失败语义。 |
-| contracts | 本次改变影响已依赖的外部行为; 涉及需要保留或迁移的持久数据 | [真实兼容与迁移契约](skills/if-contracts/SKILL.md) | 保护受影响的真实承诺，在边界完成必要兼容。 |
-| dependencies | 新增、升级或替换依赖; 依赖某个尚未核实的 API 或版本行为 | [依赖与 API 事实](skills/if-dependencies/SKILL.md) | 核对已装版本的真实接口与来源，不根据名字猜包。 |
-| architecture | 需要调整职责、表示或依赖边界 | [表示、边界与修改落点](skills/if-architecture/SKILL.md) | 决定事实来源和修改责任，缩小需要同时理解的范围。 |
-| interface | 改变用户界面的实际交互 | [真实交互而非界面空壳](skills/if-interface/SKILL.md) | 连通用户动作、真实状态、反馈与输出，不交付静态按钮。 |
+| Phase | ID | Confirmed facts | Open when needed | Action |
+| --- | --- | --- | --- | --- |
+| prelude | handoff | 需要恢复上下文或接续长任务 | [跨会话恢复与接手](skills/if-handoff/SKILL.md) | 从仓库恢复当前事实，只保留下一动作需要的接续信息。 |
+| prelude | recovery | 尝试已重复且没有新信息; 工具、依赖或执行环境阻塞 | [打破无效循环](skills/if-recovery/SKILL.md) | 停止重复失败动作，找一个能区分原因的新观测并换方法。 |
+| domain | state | 涉及需要保留或迁移的持久数据; 存在共享可变状态或并发更新; 涉及外部写入或不可重复副作用; 触及外部不可信输入; 改变身份、权限或秘密处理 | [安全、状态与并发边界](skills/if-state/SKILL.md) | 明确保证建立的位置、原子转移和部分失败语义。 |
+| domain | contracts | 本次改变影响已依赖的外部行为; 涉及需要保留或迁移的持久数据 | [真实兼容与迁移契约](skills/if-contracts/SKILL.md) | 保护受影响的真实承诺，在边界完成必要兼容。 |
+| domain | dependencies | 新增、升级或替换依赖; 依赖某个尚未核实的 API 或版本行为 | [依赖与 API 事实](skills/if-dependencies/SKILL.md) | 核对已装版本的真实接口与来源，不根据名字猜包。 |
+| domain | architecture | 需要调整职责、表示或依赖边界 | [表示、边界与修改落点](skills/if-architecture/SKILL.md) | 决定事实来源和修改责任，缩小需要同时理解的范围。 |
+| domain | interface | 改变用户界面的实际交互 | [真实交互而非界面空壳](skills/if-interface/SKILL.md) | 连通用户动作、真实状态、反馈与输出，不交付静态按钮。 |
 
 ## STAGE
 
@@ -53,7 +53,7 @@ Stage adjusts obligations; it is not another pipeline.
 ## NEXT / CAPABILITIES
 
 NEXT is only the remaining user-requested sequence. It is never inferred as an authorization.
-CAPABILITIES.preferred/missing covers PRIMARY + LOAD_NOW only; deferred lists later-only capabilities.
+CAPABILITIES.preferred/missing covers PRIMARY + LOAD_NOW only; deferred lists later-only domain capabilities.
 Capabilities describe useful tools, not compulsory workflow or permission to use them.
 Missing capabilities use [runtime](references/runtime.md); no auto-installation or model switching.
 Selection, instruction loading, implementation and observed execution remain separate facts.

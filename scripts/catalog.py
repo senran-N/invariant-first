@@ -28,20 +28,21 @@ def render(cfg: dict) -> dict[str, str]:
               "Use explicit `--intent` or the equivalent semantic choice; do not ask the user to choose a routing menu.", "",
               "## SUPPORT", "",
               "Load only for confirmed, current-task facts. Text hints are suggestions, not facts.",
-              "Manifest order is load priority: restore context, recover progress, then handle domain boundaries.",
-              f"Start with up to {cfg['max_support_now']} relevant specialists; remaining matches stay visible in DEFERRED.",
+              "Prelude specialists restore context or progress first and do not consume the domain-support budget.",
+              f"Then load up to {cfg['max_support_now']} confirmed domain specialists; remaining domain matches stay visible in DEFERRED.",
               "Read LOAD_NOW before acting. Handoff/recovery restore the current PRIMARY, not a new project.",
               "Load a deferred specialist before working on its boundary; deferred does not mean waived.", "",
-              "| ID | Confirmed facts | Open when needed | Action |",
-              "| --- | --- | --- | --- |"]
+              "| Phase | ID | Confirmed facts | Open when needed | Action |",
+              "| --- | --- | --- | --- | --- |"]
     for spec in cfg["specialists"]:
         facts = "; ".join(cfg["facts"][f] for f in spec["when_any"])
-        lines.append(f"| {spec['id']} | {cell(facts)} | [{spec['label']}]({spec['path']}) | {cell(spec['action'])} |")
+        phase = spec.get("phase", "domain")
+        lines.append(f"| {phase} | {spec['id']} | {cell(facts)} | [{spec['label']}]({spec['path']}) | {cell(spec['action'])} |")
     lines += ["", "## STAGE", "", "Stage adjusts obligations; it is not another pipeline.", ""]
     lines += [f"- **{stage}**: {description}" for stage, description in cfg["stages"].items()]
     lines += ["", "## NEXT / CAPABILITIES", "",
               "NEXT is only the remaining user-requested sequence. It is never inferred as an authorization.",
-              "CAPABILITIES.preferred/missing covers PRIMARY + LOAD_NOW only; deferred lists later-only capabilities.",
+              "CAPABILITIES.preferred/missing covers PRIMARY + LOAD_NOW only; deferred lists later-only domain capabilities.",
               "Capabilities describe useful tools, not compulsory workflow or permission to use them.",
               "Missing capabilities use [runtime](references/runtime.md); no auto-installation or model switching.",
               "Selection, instruction loading, implementation and observed execution remain separate facts.", ""]
