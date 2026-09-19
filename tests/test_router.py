@@ -78,11 +78,21 @@ class RouterTests(unittest.TestCase):
         result = select_route(self.cfg, {
             "task": "Continue the existing migration", "intent": "evolve",
             "facts": {"cross_session": True, "stalled": True, "persisted_data": True}})
-        self.assertEqual([s["id"] for s in result["SUPPORT"][:2]],
-                         ["handoff", "recovery"])
-        self.assertEqual([s["id"] for s in result["DEFERRED"]],
-                         ["state", "contracts"])
+        self.assertEqual([s["id"] for s in result["SUPPORT"]],
+                         ["handoff", "recovery", "state", "contracts"])
+        self.assertEqual([Path(p).parent.name for p in result["LOAD_NOW"][1:]],
+                         ["if-handoff", "if-recovery", "if-state", "if-contracts"])
+        self.assertEqual(result["DEFERRED"], [])
         self.assertEqual(result["route_id"], "evolve")
+
+    def test_prelude_does_not_consume_domain_budget(self):
+        result = select_route(self.cfg, {
+            "task": "Continue fixing duplicate writes", "intent": "fix",
+            "facts": {"cross_session": True, "stalled": True, "shared_state": True,
+                      "external_consumers": True, "dependency_change": True}})
+        self.assertEqual([Path(p).parent.name for p in result["LOAD_NOW"][1:]],
+                         ["if-handoff", "if-recovery", "if-state", "if-contracts"])
+        self.assertEqual([s["id"] for s in result["DEFERRED"]], ["dependencies"])
 
     def test_deferred_capability_does_not_block_current_work(self):
         result = select_route(self.cfg, {
@@ -132,6 +142,10 @@ class RouterTests(unittest.TestCase):
             validate_config(cfg, ROOT)
         cfg = copy.deepcopy(self.cfg)
         cfg["routes"][0]["rules"][0]["any"] = ["["]
+        with self.assertRaises(RoutingError):
+            validate_config(cfg, ROOT)
+        cfg = copy.deepcopy(self.cfg)
+        cfg["specialists"][0]["phase"] = "later"
         with self.assertRaises(RoutingError):
             validate_config(cfg, ROOT)
 
