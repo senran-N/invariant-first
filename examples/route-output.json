@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "config_version": "2.0.0",
+  "task": "修复线上已缓解的重复写入 bug，然后准备修复版本安装包；不执行公开部署。",
+  "route_id": "fix",
+  "PRIMARY": "skills/if-fix/SKILL.md",
+  "selection": "explicit-intent",
+  "reason": "改变已观察到的错误行为",
+  "needs_intent_check": false,
+  "ACTION": "追到最早失真的事实或状态转移，完成最小完整修复。",
+  "DONE": "目标错误修复，相关调用一致，保留可重复复现。",
+  "stage": "adopted",
+  "stage_policy": "保护本次触及的真实外部契约；内部可以直接简化。",
+  "facts": {
+    "external_consumers": true,
+    "shared_state": true,
+    "external_effects": true
+  },
+  "SUPPORT": [
+    {
+      "id": "state",
+      "path": "skills/if-state/SKILL.md",
+      "facts": [
+        "shared_state",
+        "external_effects"
+      ],
+      "action": "明确保证建立的位置、原子转移和部分失败语义。"
+    },
+    {
+      "id": "contracts",
+      "path": "skills/if-contracts/SKILL.md",
+      "facts": [
+        "external_consumers"
+      ],
+      "action": "保护受影响的真实承诺，在边界完成必要兼容。"
+    }
+  ],
+  "LOAD_NOW": [
+    "skills/if-fix/SKILL.md",
+    "skills/if-state/SKILL.md",
+    "skills/if-contracts/SKILL.md"
+  ],
+  "DEFERRED": [],
+  "SUGGESTED_SUPPORT": [],
+  "CAPABILITIES": {
+    "preferred": [
+      "read",
+      "search",
+      "edit",
+      "run"
+    ],
+    "available": [
+      "read",
+      "search",
+      "edit",
+      "run",
+      "artifact"
+    ],
+    "missing": [],
+    "guide": "references/runtime.md"
+  },
+  "NEXT": [
+    {
+      "id": "release",
+      "path": "skills/if-release/SKILL.md"
+    }
+  ],
+  "CANDIDATES": [
+    {
+      "id": "fix",
+      "weight": 100,
+      "matched_rules": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "release",
+      "weight": 65,
+      "matched_rules": [
+        1
+      ]
+    }
+  ],
+  "authorization": "No permission is inferred or granted; follow the actual user and host scope.",
+  "side_effects": "none: this command only reads the skill and prints a routing decision"
+}

@@ -1,0 +1,468 @@
+{
+  "schema_version": 1,
+  "version": "2.0.0",
+  "fallback": "build",
+  "max_support_now": 2,
+  "priority": [
+    "review",
+    "document",
+    "operate",
+    "retire",
+    "optimize",
+    "fix",
+    "evolve",
+    "release",
+    "frame",
+    "build"
+  ],
+  "aliases": {
+    "docs": "document",
+    "design": "frame",
+    "refactor": "evolve",
+    "perf": "optimize",
+    "debug": "fix",
+    "incident": "operate"
+  },
+  "stages": {
+    "preview": "无真实旧依赖时直接定接口；做完整核心，不造兼容平台。",
+    "adopted": "保护本次触及的真实外部契约；内部可以直接简化。",
+    "unknown": "沿实际调用和数据判断边界，不为确认阶段启动全仓调查。"
+  },
+  "capabilities": [
+    "read",
+    "search",
+    "edit",
+    "run",
+    "measure",
+    "interact",
+    "artifact",
+    "deploy"
+  ],
+  "facts": {
+    "external_consumers": "本次改变影响已依赖的外部行为",
+    "persisted_data": "涉及需要保留或迁移的持久数据",
+    "shared_state": "存在共享可变状态或并发更新",
+    "external_effects": "涉及外部写入或不可重复副作用",
+    "untrusted_input": "触及外部不可信输入",
+    "auth_change": "改变身份、权限或秘密处理",
+    "structure_change": "需要调整职责、表示或依赖边界",
+    "dependency_change": "新增、升级或替换依赖",
+    "unknown_api": "依赖某个尚未核实的 API 或版本行为",
+    "ui_change": "改变用户界面的实际交互",
+    "cross_session": "需要恢复上下文或接续长任务",
+    "stalled": "尝试已重复且没有新信息",
+    "environment_blocked": "工具、依赖或执行环境阻塞"
+  },
+  "routes": [
+    {
+      "id": "frame",
+      "label": "定向、架构与接手",
+      "path": "skills/if-frame/SKILL.md",
+      "intent": "用户要方向、设计、解释或接手判断，而非立刻实现",
+      "action": "找真实入口与核心表示，做出一个能推进任务的取舍。",
+      "done": "方向或修改位置明确；实现已获授权才继续开发。",
+      "capabilities": [
+        "read",
+        "search"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:设计|规划|评估|解释|比较|理解|接手|梳理|design|plan|explain|compare|understand)"
+          ],
+          "weight": 95
+        },
+        {
+          "any": [
+            "架构方案|技术选型|先.*(?:设计|评估)|architecture design|technical design"
+          ],
+          "weight": 75
+        },
+        {
+          "any": [
+            "不要(?:改|修改|修复).*只(?:解释|说明|分析)|只(?:解释|说明).*原因|(?:only|just) explain"
+          ],
+          "weight": 150
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "label": "预览与功能开发",
+      "path": "skills/if-build/SKILL.md",
+      "intent": "实现新的可用能力或补完现有功能",
+      "action": "先实现核心难点，再接通真实入口、处理与输出。",
+      "done": "约定功能从真实入口可用，不是空壳或孤立演示。",
+      "capabilities": [
+        "read",
+        "search",
+        "edit",
+        "run"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:从零|实现|新增|开发|做一个|做个|implement|add|create|build)"
+          ],
+          "none": [
+            "^(?:请|帮我)?(?:新增|添加).*?(?:README|文档章节)|^build\\s+(?:a\\s+)?(?:release|package|artifact)"
+          ],
+          "weight": 100
+        },
+        {
+          "any": [
+            "开发者预览|从零开发|developer preview|greenfield|实现.*功能|新增.*能力"
+          ],
+          "weight": 70
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "label": "设计与代码审查",
+      "path": "skills/if-review/SKILL.md",
+      "intent": "交付审查发现；只读请求不等于修复授权",
+      "action": "对照目标读变更与直接协作者，找有具体后果的问题。",
+      "done": "发现有位置、条件与后果；没有实质问题就直接说明。",
+      "capabilities": [
+        "read",
+        "search"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:只(?:做|要)?|仅)?(?:审查|评审|review|audit)"
+          ],
+          "weight": 140
+        },
+        {
+          "any": [
+            "发布前.*(?:审查|review)|审查.*(?:迁移|补丁|方案)|review (?:this|the) (?:patch|migration|design)|code review"
+          ],
+          "weight": 110
+        },
+        {
+          "any": [
+            "不要(?:改|修改|修复).*只(?:做)?(?:审查|评审)|只(?:做|要)?(?:审查|评审)|(?:only|just) review"
+          ],
+          "weight": 150
+        }
+      ]
+    },
+    {
+      "id": "release",
+      "label": "打包与交付发布",
+      "path": "skills/if-release/SKILL.md",
+      "intent": "生成发布产物、准备交付或执行已授权发布",
+      "action": "用仓库真实流程构建分发产物，检查产物使用路径。",
+      "done": "产物或已授权部署完成；准备与实际发布分别报告。",
+      "capabilities": [
+        "read",
+        "edit",
+        "run",
+        "artifact"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:打包|发布|部署|上线|准备发布|package|release|deploy)|^build\\s+(?:a\\s+)?(?:release|package|artifact)"
+          ],
+          "weight": 100
+        },
+        {
+          "any": [
+            "安装包|发布包|发布准备|release artifact|release package"
+          ],
+          "weight": 65
+        }
+      ]
+    },
+    {
+      "id": "operate",
+      "label": "运行能力与故障恢复",
+      "path": "skills/if-operate/SKILL.md",
+      "intent": "恢复正在受影响的使用，或完成运行改进",
+      "action": "确认用户侧影响，执行最直接的已授权恢复或运行改进。",
+      "done": "真实使用恢复或运行能力可用，剩余问题明确。",
+      "capabilities": [
+        "read",
+        "run"
+      ],
+      "rules": [
+        {
+          "any": [
+            "(?:线上|生产|服务).*(?:宕机|不可用|故障|挂了|中断).*(?:恢复|止血|处理)|(?:restore|recover|mitigate).*(?:production|outage|service)|production.*(?:down|outage)"
+          ],
+          "weight": 115
+        },
+        {
+          "any": [
+            "^(?:请|帮我)?(?:恢复服务|配置监控|修复部署环境|备份恢复)|排查.*线上|incident response|backup restore"
+          ],
+          "weight": 90
+        }
+      ]
+    },
+    {
+      "id": "fix",
+      "label": "缺陷与根因修复",
+      "path": "skills/if-fix/SKILL.md",
+      "intent": "改变已观察到的错误行为",
+      "action": "追到最早失真的事实或状态转移，完成最小完整修复。",
+      "done": "目标错误修复，相关调用一致，保留可重复复现。",
+      "capabilities": [
+        "read",
+        "search",
+        "edit",
+        "run"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:修复|修好|修一下|修这个|解决|排查并修|fix|debug)"
+          ],
+          "weight": 100
+        },
+        {
+          "any": [
+            "修.*bug|修.*错误|修.*回归|bug fix|regression fix|fails? to|报错"
+          ],
+          "weight": 70
+        }
+      ]
+    },
+    {
+      "id": "optimize",
+      "label": "性能与成本优化",
+      "path": "skills/if-optimize/SKILL.md",
+      "intent": "改善明确负载的延迟、吞吐、内存或成本",
+      "action": "看目标负载与真实瓶颈，先消掉不必要的工作。",
+      "done": "前后可比，收益和代价明确，不以少做功能换速度。",
+      "capabilities": [
+        "read",
+        "edit",
+        "run",
+        "measure"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:优化|提升性能|降低延迟|减少内存|optimize|speed up|reduce latency)|性能优化|memory usage|p99|吞吐"
+          ],
+          "none": [
+            "优化.*(?:README|文档|措辞|说明书|路由说明)"
+          ],
+          "weight": 100
+        }
+      ]
+    },
+    {
+      "id": "evolve",
+      "label": "重构、迁移与转向",
+      "path": "skills/if-evolve/SKILL.md",
+      "intent": "替换结构、依赖或方向，并完成范围内切换",
+      "action": "让新的完整路径承担工作，改完调用，结束无用双轨。",
+      "done": "替换增量闭合；残留过渡有真实消费者和退出责任。",
+      "capabilities": [
+        "read",
+        "search",
+        "edit",
+        "run"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:重构|迁移|替换|升级依赖|转向|refactor|migrate|replace|upgrade)"
+          ],
+          "weight": 100
+        },
+        {
+          "any": [
+            "保持.*行为.*替换|产品转向|架构迁移|dependency upgrade|schema migration"
+          ],
+          "weight": 75
+        }
+      ]
+    },
+    {
+      "id": "retire",
+      "label": "弃用、移除与退役",
+      "path": "skills/if-retire/SKILL.md",
+      "intent": "结束已存在的能力、支持或服务",
+      "action": "处理真实消费者与数据，移除已无责任的入口和资源。",
+      "done": "授权的退出增量完成；共享资源和仍存承诺没有被误删。",
+      "capabilities": [
+        "read",
+        "search",
+        "edit"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:退役|下线|弃用|移除旧|删除废弃|停用|retire|decommission|deprecate|remove obsolete)"
+          ],
+          "weight": 100
+        },
+        {
+          "any": [
+            "结束支持|关闭旧服务|移除无用|sunset.*service|end.of.life"
+          ],
+          "weight": 75
+        }
+      ]
+    },
+    {
+      "id": "document",
+      "label": "用户、接口与维护文档",
+      "path": "skills/if-document/SKILL.md",
+      "intent": "文档、教程、说明或参考是主要交付物",
+      "action": "按读者任务写可直接用的正文与真实示例。",
+      "done": "用户能用、维护者能定位；当前能力与计划分开。",
+      "capabilities": [
+        "read",
+        "search",
+        "edit"
+      ],
+      "rules": [
+        {
+          "any": [
+            "^(?:请|帮我|please\\s+)?(?:写|编写|更新|补充|完善|重写|翻译|整理|优化|write|update|rewrite|translate|improve).*(?:文档|手册|README|教程|报告|说明|documentation|guide|readme|runbook)",
+            "^(?:请|帮我)?给.*(?:README|文档).*(?:增加|补充|更新)",
+            "把.*(?:写成|整理成).*(?:指南|教程|文档)|^document\\b"
+          ],
+          "weight": 130
+        },
+        {
+          "any": [
+            "写.*(?:迁移|故障).*(?:手册|指南)|documentation only|docs only"
+          ],
+          "weight": 115
+        },
+        {
+          "any": [
+            "^(?:请帮我|麻烦帮我)\\s*(?:写|编写|更新|补充|完善|重写|翻译|整理).*(?:文档|手册|README|教程|报告|说明)",
+            "(?:only|just) (?:write|update).*(?:doc|guide|runbook)|只(?:要|写|改|更新).*(?:文档|手册|README)"
+          ],
+          "weight": 145
+        }
+      ]
+    }
+  ],
+  "specialists": [
+    {
+      "id": "recovery",
+      "label": "打破无效循环",
+      "path": "skills/if-recovery/SKILL.md",
+      "when_any": [
+        "stalled",
+        "environment_blocked"
+      ],
+      "action": "停止重复失败动作，找一个能区分原因的新观测并换方法。",
+      "capabilities": [
+        "read"
+      ],
+      "hints": [
+        "反复失败|一直失败|卡住|没有进展|stuck|same error|keeps failing"
+      ]
+    },
+    {
+      "id": "state",
+      "label": "安全、状态与并发边界",
+      "path": "skills/if-state/SKILL.md",
+      "when_any": [
+        "persisted_data",
+        "shared_state",
+        "external_effects",
+        "untrusted_input",
+        "auth_change"
+      ],
+      "action": "明确保证建立的位置、原子转移和部分失败语义。",
+      "capabilities": [
+        "read"
+      ],
+      "hints": [
+        "并发|重复写|重试|权限|迁移数据库|concurren|race condition|idempot|transaction"
+      ]
+    },
+    {
+      "id": "contracts",
+      "label": "真实兼容与迁移契约",
+      "path": "skills/if-contracts/SKILL.md",
+      "when_any": [
+        "external_consumers",
+        "persisted_data"
+      ],
+      "action": "保护受影响的真实承诺，在边界完成必要兼容。",
+      "capabilities": [
+        "read"
+      ],
+      "hints": [
+        "保持.*(?:接口|行为)|向后兼容|旧格式|compatib|existing users|backward"
+      ]
+    },
+    {
+      "id": "dependencies",
+      "label": "依赖与 API 事实",
+      "path": "skills/if-dependencies/SKILL.md",
+      "when_any": [
+        "dependency_change",
+        "unknown_api"
+      ],
+      "action": "核对已装版本的真实接口与来源，不根据名字猜包。",
+      "capabilities": [
+        "read",
+        "search"
+      ],
+      "hints": [
+        "依赖|SDK|第三方|API.*不存在|package|dependency|unknown api"
+      ]
+    },
+    {
+      "id": "architecture",
+      "label": "表示、边界与修改落点",
+      "path": "skills/if-architecture/SKILL.md",
+      "when_any": [
+        "structure_change"
+      ],
+      "action": "决定事实来源和修改责任，缩小需要同时理解的范围。",
+      "capabilities": [
+        "read",
+        "search"
+      ],
+      "hints": [
+        "架构|重构|重复状态|职责|耦合|architecture|refactor|ownership"
+      ]
+    },
+    {
+      "id": "interface",
+      "label": "真实交互而非界面空壳",
+      "path": "skills/if-interface/SKILL.md",
+      "when_any": [
+        "ui_change"
+      ],
+      "action": "连通用户动作、真实状态、反馈与输出，不交付静态按钮。",
+      "capabilities": [
+        "read",
+        "interact"
+      ],
+      "hints": [
+        "界面|按钮|前端|交互|无障碍|frontend|button|interaction|accessibility"
+      ]
+    },
+    {
+      "id": "handoff",
+      "label": "跨会话恢复与接手",
+      "path": "skills/if-handoff/SKILL.md",
+      "when_any": [
+        "cross_session"
+      ],
+      "action": "从仓库恢复当前事实，只保留下一动作需要的接续信息。",
+      "capabilities": [
+        "read"
+      ],
+      "hints": [
+        "继续上次|新会话|交接|接手|resume|handoff|new session"
+      ]
+    }
+  ]
+}

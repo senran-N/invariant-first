@@ -1,0 +1,12 @@
+{
+  "task": "修复线上已缓解的重复写入 bug，然后准备修复版本安装包；不执行公开部署。",
+  "intent": "fix",
+  "sequence": ["fix", "release"],
+  "stage": "adopted",
+  "facts": {
+    "external_consumers": true,
+    "shared_state": true,
+    "external_effects": true
+  },
+  "capabilities": ["read", "search", "edit", "run", "artifact"]
+}

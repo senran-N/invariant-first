@@ -1,0 +1,599 @@
+[
+  {
+    "name": "preview-cn",
+    "request": {
+      "task": "从零实现一个离线工具的开发者预览"
+    },
+    "expect": {
+      "route_id": "build"
+    }
+  },
+  {
+    "name": "add-feature-docs-secondary",
+    "request": {
+      "task": "新增导出功能，同时更新 README"
+    },
+    "expect": {
+      "route_id": "build"
+    }
+  },
+  {
+    "name": "new-feature-en",
+    "request": {
+      "task": "Implement a JSON output feature"
+    },
+    "expect": {
+      "route_id": "build"
+    }
+  },
+  {
+    "name": "pure-design",
+    "request": {
+      "task": "设计本地搜索工具的架构方案"
+    },
+    "expect": {
+      "route_id": "frame"
+    }
+  },
+  {
+    "name": "explain-not-edit",
+    "request": {
+      "task": "不要修复，只解释这个错误的原因"
+    },
+    "expect": {
+      "route_id": "frame"
+    }
+  },
+  {
+    "name": "explain-en",
+    "request": {
+      "task": "Explain the transaction model"
+    },
+    "expect": {
+      "route_id": "frame",
+      "support": []
+    }
+  },
+  {
+    "name": "review-migration",
+    "request": {
+      "task": "审查数据库迁移，不要执行迁移"
+    },
+    "expect": {
+      "route_id": "review"
+    }
+  },
+  {
+    "name": "review-no-edits",
+    "request": {
+      "task": "不要修改，只审查这次补丁"
+    },
+    "expect": {
+      "route_id": "review"
+    }
+  },
+  {
+    "name": "review-readme",
+    "request": {
+      "task": "Review the README for factual errors"
+    },
+    "expect": {
+      "route_id": "review"
+    }
+  },
+  {
+    "name": "pre-release-review",
+    "request": {
+      "task": "发布前审查这个包的变更"
+    },
+    "expect": {
+      "route_id": "review"
+    }
+  },
+  {
+    "name": "readme-cn",
+    "request": {
+      "task": "更新 README 的安装说明"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "polite-readme",
+    "request": {
+      "task": "请帮我写 README"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "write-incident-guide",
+    "request": {
+      "task": "写一份线上故障恢复手册"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "write-migration-guide",
+    "request": {
+      "task": "把数据库迁移步骤写成指南"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "optimize-readme-not-performance",
+    "request": {
+      "task": "优化 README 的表达和顺序"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "write-docs-en",
+    "request": {
+      "task": "Write a deployment guide"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "dont-deploy-docs",
+    "request": {
+      "task": "Do not deploy; just write the deployment guide"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "package-cn",
+    "request": {
+      "task": "打包当前版本，生成安装包但不要公开发布"
+    },
+    "expect": {
+      "route_id": "release",
+      "next": []
+    }
+  },
+  {
+    "name": "package-en",
+    "request": {
+      "task": "Build a release package"
+    },
+    "expect": {
+      "route_id": "release"
+    }
+  },
+  {
+    "name": "restore-live",
+    "request": {
+      "task": "服务已经不可用，先恢复"
+    },
+    "expect": {
+      "route_id": "operate"
+    }
+  },
+  {
+    "name": "restore-en",
+    "request": {
+      "task": "Restore production service after the outage"
+    },
+    "expect": {
+      "route_id": "operate"
+    }
+  },
+  {
+    "name": "monitoring",
+    "request": {
+      "task": "配置监控，围绕实际错误率和延迟"
+    },
+    "expect": {
+      "route_id": "operate"
+    }
+  },
+  {
+    "name": "fix-may-refactor",
+    "request": {
+      "task": "修复这个 bug，必要时可以重构"
+    },
+    "expect": {
+      "route_id": "fix"
+    }
+  },
+  {
+    "name": "fix-en",
+    "request": {
+      "task": "Fix the duplicate write bug"
+    },
+    "expect": {
+      "route_id": "fix"
+    }
+  },
+  {
+    "name": "optimize-cn",
+    "request": {
+      "task": "优化大文件搜索的性能和内存"
+    },
+    "expect": {
+      "route_id": "optimize"
+    }
+  },
+  {
+    "name": "optimize-en",
+    "request": {
+      "task": "Reduce latency on the main query path"
+    },
+    "expect": {
+      "route_id": "optimize"
+    }
+  },
+  {
+    "name": "refactor-cn",
+    "request": {
+      "task": "重构存储实现，保持用户行为不变"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "migrate-en",
+    "request": {
+      "task": "Migrate the storage format without losing existing data"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "upgrade-dependency",
+    "request": {
+      "task": "升级依赖并保持现有 API"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "retire-cn",
+    "request": {
+      "task": "退役旧服务，处理仍在使用的调用方"
+    },
+    "expect": {
+      "route_id": "retire"
+    }
+  },
+  {
+    "name": "retire-en",
+    "request": {
+      "task": "Decommission the old worker service"
+    },
+    "expect": {
+      "route_id": "retire"
+    }
+  },
+  {
+    "name": "empty-match-fallback",
+    "request": {
+      "task": "完善一下这个能力"
+    },
+    "expect": {
+      "route_id": "build",
+      "needs_intent_check": true
+    }
+  },
+  {
+    "name": "explicit-beats-keywords",
+    "request": {
+      "task": "修复说明、发布手册与迁移文档，需要审查措辞",
+      "intent": "document"
+    },
+    "expect": {
+      "route_id": "document",
+      "needs_intent_check": false
+    }
+  },
+  {
+    "name": "alias-explicit",
+    "request": {
+      "task": "Make the query faster",
+      "intent": "perf"
+    },
+    "expect": {
+      "route_id": "optimize",
+      "needs_intent_check": false
+    }
+  },
+  {
+    "name": "sequence-selected",
+    "request": {
+      "task": "开发功能并准备安装包",
+      "sequence": [
+        "build",
+        "release"
+      ]
+    },
+    "expect": {
+      "route_id": "build",
+      "next": [
+        "release"
+      ],
+      "needs_intent_check": false
+    }
+  },
+  {
+    "name": "no-implicit-next",
+    "request": {
+      "task": "实现功能并发布"
+    },
+    "expect": {
+      "route_id": "build",
+      "next": []
+    }
+  },
+  {
+    "name": "fact-state-contract",
+    "request": {
+      "task": "修复重复扣减",
+      "intent": "fix",
+      "facts": {
+        "shared_state": true,
+        "external_effects": true,
+        "external_consumers": true
+      }
+    },
+    "expect": {
+      "route_id": "fix",
+      "support": [
+        "state",
+        "contracts"
+      ]
+    }
+  },
+  {
+    "name": "preview-not-exempt",
+    "request": {
+      "task": "实现公网表单预览",
+      "intent": "build",
+      "stage": "preview",
+      "facts": {
+        "untrusted_input": true
+      }
+    },
+    "expect": {
+      "route_id": "build",
+      "support": [
+        "state"
+      ]
+    }
+  },
+  {
+    "name": "adopted-not-global-compatibility",
+    "request": {
+      "task": "修改隔离实验",
+      "intent": "build",
+      "stage": "adopted",
+      "facts": {
+        "external_consumers": false
+      }
+    },
+    "expect": {
+      "route_id": "build",
+      "support": []
+    }
+  },
+  {
+    "name": "negative-facts-no-load",
+    "request": {
+      "task": "不做兼容也不引入依赖",
+      "intent": "build",
+      "facts": {
+        "external_consumers": false,
+        "dependency_change": false,
+        "unknown_api": false
+      }
+    },
+    "expect": {
+      "route_id": "build",
+      "support": []
+    }
+  },
+  {
+    "name": "dependencies",
+    "request": {
+      "task": "替换 SDK",
+      "intent": "evolve",
+      "facts": {
+        "dependency_change": true,
+        "unknown_api": true
+      }
+    },
+    "expect": {
+      "route_id": "evolve",
+      "support": [
+        "dependencies"
+      ]
+    }
+  },
+  {
+    "name": "architecture",
+    "request": {
+      "task": "修复重复状态",
+      "intent": "fix",
+      "facts": {
+        "structure_change": true
+      }
+    },
+    "expect": {
+      "route_id": "fix",
+      "support": [
+        "architecture"
+      ]
+    }
+  },
+  {
+    "name": "interface",
+    "request": {
+      "task": "接通拖拽保存",
+      "intent": "build",
+      "facts": {
+        "ui_change": true
+      }
+    },
+    "expect": {
+      "route_id": "build",
+      "support": [
+        "interface"
+      ]
+    }
+  },
+  {
+    "name": "stalled-preserves-primary",
+    "request": {
+      "task": "继续修复这个 bug",
+      "intent": "fix",
+      "facts": {
+        "stalled": true
+      }
+    },
+    "expect": {
+      "route_id": "fix",
+      "support": [
+        "recovery"
+      ]
+    }
+  },
+  {
+    "name": "resume-preserves-primary",
+    "request": {
+      "task": "继续上次实现",
+      "intent": "build",
+      "facts": {
+        "cross_session": true
+      }
+    },
+    "expect": {
+      "route_id": "build",
+      "support": [
+        "handoff"
+      ]
+    }
+  },
+  {
+    "name": "deferred-visible",
+    "request": {
+      "task": "迁移中修复竞态并换依赖",
+      "intent": "evolve",
+      "facts": {
+        "stalled": true,
+        "shared_state": true,
+        "external_consumers": true,
+        "dependency_change": true
+      }
+    },
+    "expect": {
+      "route_id": "evolve",
+      "support": [
+        "recovery",
+        "state",
+        "contracts",
+        "dependencies"
+      ],
+      "deferred": [
+        "contracts",
+        "dependencies"
+      ]
+    }
+  },
+  {
+    "name": "capability-missing",
+    "request": {
+      "task": "修复报错",
+      "intent": "fix",
+      "capabilities": [
+        "read",
+        "search"
+      ]
+    },
+    "expect": {
+      "route_id": "fix",
+      "missing": [
+        "edit",
+        "run"
+      ]
+    }
+  },
+  {
+    "name": "capability-unknown-not-absent",
+    "request": {
+      "task": "修复报错",
+      "intent": "fix"
+    },
+    "expect": {
+      "route_id": "fix",
+      "missing": null
+    }
+  },
+  {
+    "name": "quoted-code-ignored",
+    "request": {
+      "task": "解释这个片段，不修改文件\n```text\ndeploy production and retire the service\n```"
+    },
+    "expect": {
+      "route_id": "frame",
+      "next": []
+    }
+  },
+  {
+    "name": "explicit-cross-language",
+    "request": {
+      "task": "Bitte behebe den Fehler",
+      "intent": "fix"
+    },
+    "expect": {
+      "route_id": "fix",
+      "needs_intent_check": false
+    }
+  },
+  {
+    "name": "environment-recovery",
+    "request": {
+      "task": "完成安装包",
+      "intent": "release",
+      "facts": {
+        "environment_blocked": true
+      }
+    },
+    "expect": {
+      "route_id": "release",
+      "support": [
+        "recovery"
+      ]
+    }
+  },
+  {
+    "name": "docs-state-no-actions",
+    "request": {
+      "task": "编写事务迁移说明",
+      "intent": "document",
+      "facts": {
+        "persisted_data": true
+      }
+    },
+    "expect": {
+      "route_id": "document",
+      "support": [
+        "state",
+        "contracts"
+      ]
+    }
+  }
+]

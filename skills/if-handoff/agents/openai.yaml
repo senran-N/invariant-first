@@ -1,0 +1,10 @@
+interface:
+  display_name: Invariant First - handoff
+  short_description: Focused handoff method for the Invariant First router
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,11 @@
+interface:
+  display_name: Invariant First
+  short_description: Route engineering work, build decisively, and preserve clear
+    handoffs.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

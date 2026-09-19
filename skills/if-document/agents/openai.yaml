@@ -1,0 +1,10 @@
+interface:
+  display_name: Invariant First - document
+  short_description: Focused document method for the Invariant First router
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
