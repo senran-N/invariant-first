@@ -1,6 +1,6 @@
-# 社区反馈与成熟实现：编辑意图和行为契约
+# 社区反馈与成熟实现：编辑意图、行为契约与有效配置
 
-核查日期：2026-09-19。此文件供维护本技能包时按需读取，不加入日常任务的默认上下文。先读原始论坛反馈，再对照下面的历史版本；只抽取能改变行动的方法。项目是协作成果，不把全部源码归于创始人，也不宣称读过整个仓库。
+最近核查：2026-09-20。此文件供维护本技能包时按需读取，不加入日常任务的默认上下文。先读原始论坛反馈，再对照下面的历史版本；只抽取能改变行动的方法。项目是协作成果，不把全部源码归于创始人，也不宣称读过整个仓库。
 
 ## 社区线索与可信度
 
@@ -11,6 +11,9 @@
 | F3 | [V2EX：CSV 新功能遗漏已有规则](https://www.v2ex.com/t/1219159)，页面标记 Jun 9 | 发帖者要求按勾选顺序导出、缺失留空、保留权限与审计；报告实际结果排序改变且遗漏保护。未独立复现；帖子附带的重流程提示并非本包采用的方法。 |
 | F4 | [Claude Code issue 65961：冗长注释](https://github.com/anthropics/claude-code/issues/65961)，2026-06-07 | 用户报告重复、显然及引用聊天的注释，要求停止仍会出现。示例里也有可能承载真实语义的说明，因此不接受“所有长注释都应删除”的推论。 |
 | F5 | [Hacker News：Don't paste the AI, please](https://news.ycombinator.com/item?id=49371857) | 部分评论反对把未编辑的模型输出交给他人承担阅读成本；也有评论认为应按内容价值而非作者身份判断。提炼信息责任，不限制作者身份。 |
+| F6 | [Claude Code #51265](https://github.com/anthropics/claude-code/issues/51265) 与其重复问题 [#47056](https://github.com/anthropics/claude-code/issues/47056)，2026-04 | 用户给出步骤说明 `CLAUDE_CONFIG_DIR` 指向自定义目录、部分 CLI 设置已经从那里生效，但 Agent 查找或上下文加载仍触及 `~/.claude`。两个 issue 的关闭或 stale 状态都不能证明当前行为已修复；这里只作为“声明的配置位置与实际消费者可能不是同一层”的线索。 |
+| F7 | [Claude Code #79527：`--agents` 无效 JSON 静默通过](https://github.com/anthropics/claude-code/issues/79527)，2026-07-20 | 报告称错误的 `--agents` JSON 仍以退出码 0 启动，定制 Agent 没有定义，而相邻 `--settings` / `--mcp-config` 会失败；issue 标记为维护方已复现。它支持“进程成功不等于目标配置已生效”，不能外推为所有配置入口都 fail-open。 |
+| F8 | [Cursor：`.cursorrules` 是否被忽略](https://forum.cursor.com/t/cursorrules-file-silently-ignored-in-agent-mode-with-no-warning/152046)，2026-02-16 起 | 最初 0/9 对 9/9 的报告随后被作者纠正：工作区里已有 `.mdc` 规则会覆盖冲突项，版本号也曾报错；进一步又发现特定目录结构差异，而 3 月在当前构建上复测成功。这个反例比最初结论更有价值：先确认覆盖顺序、工作区识别和实际版本，再判断“配置被忽略”，不要从一次表面失效固化根因。 |
 
 这些是不同社区的原始讨论，不是代表性抽样、发生率统计或因果证据；未把热度当可靠性，也没有复现发帖者的私有项目。
 
@@ -47,6 +50,19 @@
 
 **落实 F4–F5：** 共同规则区分当前语义、最终差异和聊天经过；`if-document` 与文档方法使用“没有这次对话还需要吗”的判断。`if-release` 从实际交付内容形成说明。清理语言残留不等于删除合法非目标、真实回归用例、已发布迁移记录或审计历史。
 
+<a id="e6"></a>
+### E6 · Git 与 pip：分层配置要能追到实际解析结果
+
+[Git v2.46.0 的 `builtin/config.c`](https://github.com/git/git/blob/v2.46.0/builtin/config.c) 为查询提供 `--show-origin` 与 `--show-scope`，并从每个键的 `key_value_info` 输出来源类型、文件和 worktree/local/global/system/command 等作用域。它没有假定“我改了某个常见配置文件，所以这个值一定胜出”，而是把配置来源作为可检查事实。
+
+[pip 24.2 的 `configuration.py`](https://github.com/pypa/pip/blob/24.2/src/pip/_internal/configuration.py) 明确区分 GLOBAL、USER、SITE、ENV 与 ENV_VAR，并用固定覆盖顺序合成读取结果；[同版本配置命令](https://github.com/pypa/pip/blob/24.2/src/pip/_internal/commands/configuration.py) 的 `debug` 会列出环境变量、候选配置文件及各来源中的值。这里借鉴的是“知道值从哪一层来、哪一层能够覆盖”，不是要求每个小程序都暴露完整 provenance API。
+
+本轮在隔离临时目录做了一个机制小试验：本机 Git 2.47.3 同时给 `demo.mode` 提供 local 与 command 值时，`--show-origin --show-scope --get-all` 显示两层，而普通 `--get` 取得 command 值；pip 25.1.1 同时看到 `PIP_CONFIG_FILE`、配置文件值和 `PIP_TIMEOUT` 环境变量时，`pip config debug` 能区分这些来源。版本与上述历史源码样本不同，因此这只确认当前本机工具仍有相应观测能力，不是上游完整行为测试，也不是模型效果评估。
+
+[Simon Willison 的 Agentic manual testing](https://simonwillison.net/guides/agentic-engineering-patterns/agentic-manual-testing/) 强调 Agent 能执行代码就应实际执行目标路径，并指出自动测试全绿仍可能漏掉服务器启动、界面或集成层的明显失败。这里沿用的是让证据到达真实消费边界；具体用 `python -c`、`curl` 或浏览器取决于系统，不把作者使用的工具变成统一流程。
+
+**落实 F6–F8：** 当 PATH、虚拟环境、配置文件、环境变量、CLI 参数或工作区规则存在覆盖关系时，先确认实际消费者解析到的值、版本和胜出来源，再决定应改配置、启动方式还是代码。文件存在、变量已设置、参数被接受和进程退出 0 都只是中间事实；没有多层覆盖或消费歧义时，直接验证目标行为，不额外建设配置追踪平台。
+
 ## 边界
 
-本轮修改的是已有技能的行动规则，以及机械编辑的候选路由；不添加新的审核阶段或专项。确定性测试只检查分派、生成和导出一致性；上述行为方法是否改善真实模型，需要按 [evaluation](evaluation.md) 的同任务对照另行衡量。
+这些材料只用于强化已有判断与专项，不按帖子增加新技能或案例禁令。确定性测试检查分派、生成和导出一致性；工具机制试验只验证观测能力。上述行为方法是否改善真实模型，仍需按 [evaluation](evaluation.md) 的保留任务做独立对照。
