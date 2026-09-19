@@ -36,6 +36,13 @@ class ExportTests(unittest.TestCase):
         self.assertFalse(self.dest.exists())
         self.assertEqual(list(self.parent.glob(".runtime-*")), [])
 
+    def test_repository_automation_is_not_exported(self):
+        workflow = self.source / ".github" / "workflows" / "validate.yml"
+        workflow.parent.mkdir(parents=True, exist_ok=True)
+        workflow.write_text("name: source-only\n", encoding="utf-8")
+        result = export_single.export(self.source, self.dest)
+        self.assertFalse((result / ".github").exists())
+
     def test_existing_resource_is_not_overwritten(self):
         entry = self.cfg["routes"][1]
         guide = self.source / Path(entry["path"]).with_name("GUIDE.md")
