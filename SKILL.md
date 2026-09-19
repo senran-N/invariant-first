@@ -28,7 +28,7 @@ python scripts/route.py --request examples/route-request.json
 
 事实只描述**本次改动和当前阻塞**，不是整个仓库拥有的所有技术。仓库里有数据库，不代表改一段帮助文字也要加载持久化专项。接续已完成、阻塞已解除时撤下临时 SUPPORT，不继续沿用过期事实。
 
-PRIMARY 决定目标；SUPPORT 按配置顺序加载，接续和失速恢复优先于领域工作；CAPABILITIES 的 preferred/missing 只覆盖 PRIMARY 与即时专项，deferred 单列后续才可能用到的能力。能力是可用手段，不是任务前置门槛，更不是操作授权。
+PRIMARY 决定目标；SUPPORT 分两类：handoff/recovery 是 prelude，只恢复上下文或进展，不占领域专项预算；状态、契约、依赖、架构和交互属于 domain，按当前边界最多先加载配置数量，其余延后到真正触及时。CAPABILITIES 的 preferred/missing 只覆盖 PRIMARY 与 LOAD_NOW，deferred 单列后续才可能用到的能力。能力是可用手段，不是任务前置门槛，更不是操作授权。
 
 ## 目标不被方法抢走
 
