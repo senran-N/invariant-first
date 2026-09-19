@@ -31,7 +31,7 @@ def export(source: Path, destination: Path) -> Path:
         if new in mapping.values() or (new != old and (source / new).exists()):
             raise RoutingError(f"Export resource collision: {new}")
         mapping[old] = new
-    ignore = shutil.ignore_patterns(".git", ".hg", ".svn", "__pycache__", "*.pyc", ".pytest_cache")
+    ignore = shutil.ignore_patterns(".git", ".hg", ".svn", ".github", "__pycache__", "*.pyc", ".pytest_cache")
     for directory, dirs, files in os.walk(source, followlinks=False):
         excluded = ignore(directory, dirs + files)
         dirs[:] = [name for name in dirs if name not in excluded]
