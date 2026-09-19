@@ -50,6 +50,24 @@
 
 **动作。** DONE 是具体成果，不是写了报告。一个规则一个权威位置，调用和文档同改。禁止删除预期、把替身当集成、把未运行当通过；经验回流只写有条件、有依据、可失效的教训。
 
+## P9 · 仓库对 Agent 不可读，规则越堆越多
+
+**观察。** OpenAI 在 2026 年的 harness engineering 案例中报告：把大量指导塞进一个巨型 `AGENTS.md` 会挤占任务上下文、让所有规则都像“同样重要”、快速腐化且难以机械验证；团队后来改成短入口加结构化仓库知识库，并把“agent legibility”作为设计目标 [A9]。同一案例还把重复的坏模式视为需要持续“垃圾回收”的仓库熵，而不是靠一次大清理解决。
+
+**动作。** 本包要求入口做地图、事实留在最近的权威位置；重复 Agent 失败优先修代码表示、仓库说明或工具边界，而不是继续扩大全局提示。维护本包时删除失效规则，与新增规则同样重要。
+
+## P10 · Harness 会替旧模型保留过时的拐杖
+
+**观察。** Anthropic 在 2026 年 Managed Agents 文章中明确指出，harness 会编码“模型做不到什么”的假设，而模型能力变化后这些假设会过时；其例子是早期为 context anxiety 增加的上下文重置，在后续模型上不再总是必要 [A10]。这不意味着所有恢复机制都应删除，而是说明约束需要持续证明其净收益。
+
+**动作。** 每条全局规则必须能指出具体失败模式、触发条件和行动差异。能力提升或仓库结构已经消除原问题时，收缩或删除规则；不要把过去一次模型失败永久升级为所有任务的前置流程。
+
+## P11 · 自评容易偏乐观，尤其是主观质量
+
+**观察。** Anthropic 的 2026 年长任务 harness 案例报告，生成者自评时常倾向肯定自己的产物，主观设计任务尤其明显；把生成与评价分离后更容易得到有用的批评反馈 [A11]。这是特定 harness 的工程结果，不证明每个任务都需要额外 Agent。
+
+**动作。** review 对主观质量先用明确可观察标准，而不是“看起来不错”。宿主已经有独立 reviewer/evaluator 且任务价值足够时可利用；普通修改不因此强制多 Agent 或增加评审仪式。
+
 ## 来源
 
 - **A1** Anthropic, Effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
@@ -60,5 +78,8 @@
 - **A6** Stack Overflow 2025 Developer Survey, AI section: https://survey.stackoverflow.co/2025/ai
 - **A7** How Coding Agents Fail Their Users，2026 年预印本 v2：https://arxiv.org/html/2605.29442v2
 - **A8** OpenAI, GPT-5 prompting guide: https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide
+- **A9** OpenAI, Harness engineering: leveraging Codex in an agent-first world: https://openai.com/index/harness-engineering/
+- **A10** Anthropic, Scaling Managed Agents: Decoupling the brain from the hands: https://www.anthropic.com/engineering/managed-agents
+- **A11** Anthropic, Harness design for long-running application development: https://www.anthropic.com/engineering/harness-design-long-running-apps
 
 没有在真实项目上用同一模型和相同预算做对照前，不宣称这些规则已降低回归率、提升开发速度，或让所有 harness 产生相同效果。路由器的结构测试只能证明分派实现符合本包定义。
