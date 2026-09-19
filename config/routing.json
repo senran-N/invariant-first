@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2.0.1",
+  "version": "2.1.0",
   "fallback": "build",
   "max_support_now": 2,
   "priority": [
@@ -362,7 +362,8 @@
       ],
       "hints": [
         "继续上次|新会话|交接|接手|resume|handoff|new session"
-      ]
+      ],
+      "phase": "prelude"
     },
     {
       "id": "recovery",
@@ -378,7 +379,8 @@
       ],
       "hints": [
         "反复失败|一直失败|卡住|没有进展|stuck|same error|keeps failing"
-      ]
+      ],
+      "phase": "prelude"
     },
     {
       "id": "state",
@@ -397,7 +399,8 @@
       ],
       "hints": [
         "并发|重复写|重试|权限|迁移数据库|concurren|race condition|idempot|transaction"
-      ]
+      ],
+      "phase": "domain"
     },
     {
       "id": "contracts",
@@ -413,7 +416,8 @@
       ],
       "hints": [
         "保持.*(?:接口|行为)|向后兼容|旧格式|compatib|existing users|backward"
-      ]
+      ],
+      "phase": "domain"
     },
     {
       "id": "dependencies",
@@ -430,7 +434,8 @@
       ],
       "hints": [
         "依赖|SDK|第三方|API.*不存在|package|dependency|unknown api"
-      ]
+      ],
+      "phase": "domain"
     },
     {
       "id": "architecture",
@@ -446,7 +451,8 @@
       ],
       "hints": [
         "架构|重构|重复状态|职责|耦合|architecture|refactor|ownership"
-      ]
+      ],
+      "phase": "domain"
     },
     {
       "id": "interface",
@@ -462,7 +468,8 @@
       ],
       "hints": [
         "界面|按钮|前端|交互|无障碍|frontend|button|interaction|accessibility"
-      ]
+      ],
+      "phase": "domain"
     }
   ]
 }
