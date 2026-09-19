@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2.1.7",
+  "version": "2.1.8",
   "fallback": "build",
   "max_support_now": 2,
   "priority": [

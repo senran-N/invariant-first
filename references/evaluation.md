@@ -4,7 +4,7 @@
 
 ## 程序契约
 
-保留 `tests/route-cases.json` 的既有回归和 `tests/test_router.py` 与 `tests/test_catalog.py` 的输入、加载、能力范围、导出及目录一致性检查。它们约束程序行为，不代表模型知道该怎么开发。自然语言只是候选；改变完整任务的语义时，不能机械要求路由结果相同。
+保留 `tests/route-cases.json` 的既有回归和 `tests/test_router.py`、`tests/test_catalog.py` 与 `tests/test_export.py` 的输入、加载、能力范围、导出及目录一致性检查。它们约束程序行为，不代表模型知道该怎么开发。自然语言只是候选；改变完整任务的语义时，不能机械要求路由结果相同。
 
 ## 行为对照（待执行）
 
