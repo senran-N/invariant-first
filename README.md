@@ -103,7 +103,7 @@ python scripts/catalog.py --check
 python -m unittest discover -s tests -v
 ```
 
-测试包含 52 条路由固定案例，以及接续优先、即时能力范围、失速解除、导出排除仓库元数据、输入约束与引用一致性检查。它们是分派程序的测试，不是真实编码 Agent 对照实验。普通项目开发不需要运行本包测试。
+测试包含机械编辑、文档与其他目标的路由固定案例，以及接续优先、即时能力范围、失速解除、导出排除仓库元数据、输入约束与引用一致性检查。它们是分派程序的测试，不是真实编码 Agent 对照实验。普通项目开发不需要运行本包测试。
 
 生成单入口目录：
 
@@ -115,6 +115,6 @@ python scripts/export_single.py --output ../single-entry/invariant-first
 
 ## 依据与效果边界
 
-[路由设计](references/routing-design.md)说明本包如何借鉴你指定的 reverse-skill；[AI 编码痛点](references/ai-coding-pain-points.md)把调查与论文发现映射到纠偏动作；[名仓库依据](references/source-lessons.md)与[文档写法](references/documentation.md)保留此前提炼。
+[社区反馈与成熟实现](references/field-notes-2026-09-19.md)展示论坛案例怎样转成有源码依据的行动规则；[路由设计](references/routing-design.md)说明本包如何借鉴 reverse-skill；[AI 编码痛点](references/ai-coding-pain-points.md)把调查与论文发现映射到纠偏动作；[名仓库依据](references/source-lessons.md)与[文档写法](references/documentation.md)保留此前提炼。
 
 路由器能使分派可复现，不能强制任意模型正确理解意图或完成开发。默认实现没有后台运行、跨模型切换或自行放宽权限。结构测试通过不等于已提升开发质量；真实模型评估设计见[evaluation](references/evaluation.md)。

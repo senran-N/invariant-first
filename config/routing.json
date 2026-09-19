@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "fallback": "build",
   "max_support_now": 2,
   "priority": [
@@ -260,8 +260,8 @@
       "id": "evolve",
       "label": "重构、迁移与转向",
       "path": "skills/if-evolve/SKILL.md",
-      "intent": "替换结构、依赖或方向，并完成范围内切换",
-      "action": "让新的完整路径承担工作，改完调用，结束无用双轨。",
+      "intent": "移动、重命名或替换结构、依赖与方向，完成范围内切换",
+      "action": "先区分结构编辑与语义变化，改完必要引用和调用。",
       "done": "替换增量闭合；残留过渡有真实消费者和退出责任。",
       "capabilities": [
         "read",
@@ -281,6 +281,15 @@
             "保持.*行为.*替换|产品转向|架构迁移|dependency upgrade|schema migration"
           ],
           "weight": 75
+        },
+        {
+          "any": [
+            "^(?:please\\s+)?move\\s+(?:(?:the\\s+)?(?:file|module|function|class|method)\\s+\\S+|\\S+\\.[a-z0-9]+)\\s+(?:to|into)\\s+\\S+",
+            "^(?:please\\s+)?rename\\s+(?:(?:the\\s+)?(?:file|module|function|class|method|symbol)\\s+)?[`\"']?[a-z_][\\w./-]*[`\"']?\\s+to\\s+\\S+",
+            "^(?:请(?:帮我)?|帮我)?(?:移动|搬移|重命名)(?:文件|模块|函数|方法|类|符号)\\s*\\S+",
+            "^(?:请(?:帮我)?|帮我)?把\\s*\\S+\\.[a-z0-9]+\\s*(?:移到|移入|移动到|重命名为)"
+          ],
+          "weight": 100
         }
       ]
     },
@@ -344,6 +353,12 @@
             "(?:only|just) (?:write|update).*(?:doc|guide|runbook)|只(?:要|写|改|更新).*(?:文档|手册|README)"
           ],
           "weight": 145
+        },
+        {
+          "any": [
+            "^(?:请(?:帮我)?|帮我|please\\s+)?(?:rename|重命名|修改|调整)\\s*(?:README|文档|documentation|guide).*?(?:heading|section|title|标题|章节)"
+          ],
+          "weight": 130
         }
       ]
     }

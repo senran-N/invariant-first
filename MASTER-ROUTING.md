@@ -16,7 +16,7 @@ A text candidate always needs an intent check. No route grants permission to act
 | 4 | retire | 结束已存在的能力、支持或服务 | [弃用、移除与退役](skills/if-retire/SKILL.md) | 处理真实消费者与数据，移除已无责任的入口和资源。 |
 | 5 | optimize | 改善明确负载的延迟、吞吐、内存或成本 | [性能与成本优化](skills/if-optimize/SKILL.md) | 看目标负载与真实瓶颈，先消掉不必要的工作。 |
 | 6 | fix | 改变已观察到的错误行为 | [缺陷与根因修复](skills/if-fix/SKILL.md) | 追到最早失真的事实或状态转移，完成最小完整修复。 |
-| 7 | evolve | 替换结构、依赖或方向，并完成范围内切换 | [重构、迁移与转向](skills/if-evolve/SKILL.md) | 让新的完整路径承担工作，改完调用，结束无用双轨。 |
+| 7 | evolve | 移动、重命名或替换结构、依赖与方向，完成范围内切换 | [重构、迁移与转向](skills/if-evolve/SKILL.md) | 先区分结构编辑与语义变化，改完必要引用和调用。 |
 | 8 | release | 生成发布产物、准备交付或执行已授权发布 | [打包与交付发布](skills/if-release/SKILL.md) | 用仓库真实流程构建分发产物，检查产物使用路径。 |
 | 9 | frame | 用户要方向、设计、解释或接手判断，而非立刻实现 | [定向、架构与接手](skills/if-frame/SKILL.md) | 找真实入口与核心表示，做出一个能推进任务的取舍。 |
 | 10 | build | 实现新的可用能力或补完现有功能 | [预览与功能开发](skills/if-build/SKILL.md) | 先实现核心难点，再接通真实入口、处理与输出。 |

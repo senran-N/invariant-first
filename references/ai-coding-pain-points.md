@@ -74,6 +74,10 @@
 
 **动作。** 采用“无残影”规则：没有长期约束意义的被否决方案，连实现、命名、注释、文档和专门测试措辞一起消失。只有协议、安全、兼容或已确认事故等稳定依据确实需要阻止未来重犯时，才保留负面约束；记录当前原因与边界，不记录对话过程。
 
+## 社区反馈的具体落点
+
+[2026-09-19 现场材料](field-notes-2026-09-19.md) 对照 Cursor、V2EX、Claude Code issue 与 Hacker News 的原始反馈，以及 Git、Go、Django、Linux 的历史源码与说明。集中处理机械移动被重写、重构丢语义、新入口绕过已有责任、注释与变更说明复述聊天；自报告和推广帖与可检查的项目机制分别标明。
+
 ## 来源
 
 - **A1** Anthropic, Effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents

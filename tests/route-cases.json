@@ -594,5 +594,117 @@
         "contracts"
       ]
     }
+  },
+  {
+    "name": "move-file-content-preserved",
+    "request": {
+      "task": "Move parser.py to core/parser.py without changing behavior"
+    },
+    "expect": {
+      "route_id": "evolve",
+      "needs_intent_check": true
+    }
+  },
+  {
+    "name": "move-module-en",
+    "request": {
+      "task": "Move the module parser to core"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "move-file-cn",
+    "request": {
+      "task": "把 parser.py 移到 core/parser.py，保持行为"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "rename-symbol-en",
+    "request": {
+      "task": "Rename parse_event to decode_event"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "rename-symbol-cn",
+    "request": {
+      "task": "重命名函数 parse_event 为 decode_event"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "rename-document-file",
+    "request": {
+      "task": "Rename README.md to GUIDE.md"
+    },
+    "expect": {
+      "route_id": "evolve"
+    }
+  },
+  {
+    "name": "rename-document-headings",
+    "request": {
+      "task": "Rename README headings for clarity"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "rename-document-headings-cn",
+    "request": {
+      "task": "修改文档章节标题，保持正文内容"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "implement-move-button",
+    "request": {
+      "task": "Implement a move button"
+    },
+    "expect": {
+      "route_id": "build"
+    }
+  },
+  {
+    "name": "write-moving-guide",
+    "request": {
+      "task": "Write a guide to moving modules"
+    },
+    "expect": {
+      "route_id": "document"
+    }
+  },
+  {
+    "name": "move-faster-is-not-file-operation",
+    "request": {
+      "task": "Move faster on the feature"
+    },
+    "expect": {
+      "route_id": "build",
+      "needs_intent_check": true
+    }
+  },
+  {
+    "name": "explicit-review-move",
+    "request": {
+      "task": "Move parser.py to core/parser.py without changing behavior",
+      "intent": "review"
+    },
+    "expect": {
+      "route_id": "review",
+      "needs_intent_check": false
+    }
   }
 ]
