@@ -25,7 +25,7 @@ class ExportTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.parent = Path(self.temp.name)
+        self.parent = Path(self.temp.name).resolve()
         self.source = self.parent / "source"
         self.dest = self.parent / "runtime"
         shutil.copytree(ROOT, self.source,
@@ -124,7 +124,7 @@ class ExportTests(unittest.TestCase):
         def intervening_writer(cfg, text):
             result = render(cfg, text)
             self.dest.mkdir()
-            (self.dest / "owned.txt").write_text("Other writer's work.\n", encoding="utf-8")
+            (self.dest / "owned.txt").write_bytes(b"Other writer's work.\n")
             return result
         with patch.object(export_single, "render_entrypoint", side_effect=intervening_writer):
             with self.assertRaisesRegex(RoutingError, "appeared during preparation"):
