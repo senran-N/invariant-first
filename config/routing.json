@@ -388,7 +388,7 @@
         "stalled",
         "environment_blocked"
       ],
-      "action": "停止重复失败动作，找一个能区分原因的新观测并换方法。",
+      "action": "按原操作状态区分等待、取结果与安全重试，恢复后继续目标。",
       "capabilities": [
         "read"
       ],

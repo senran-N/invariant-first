@@ -35,7 +35,7 @@ Load a deferred specialist before working on its boundary; deferred does not mea
 | Phase | ID | Confirmed facts | Open when needed | Action |
 | --- | --- | --- | --- | --- |
 | prelude | handoff | 需要恢复上下文或接续长任务 | [跨会话恢复与接手](skills/if-handoff/SKILL.md) | 从仓库恢复当前事实，只保留下一动作需要的接续信息。 |
-| prelude | recovery | 尝试已重复且没有新信息; 工具、依赖或执行环境阻塞 | [打破无效循环](skills/if-recovery/SKILL.md) | 停止重复失败动作，找一个能区分原因的新观测并换方法。 |
+| prelude | recovery | 尝试已重复且没有新信息; 工具、依赖或执行环境阻塞 | [打破无效循环](skills/if-recovery/SKILL.md) | 按原操作状态区分等待、取结果与安全重试，恢复后继续目标。 |
 | domain | state | 涉及需要保留或迁移的持久数据; 存在共享可变状态或并发更新; 涉及外部写入或不可重复副作用; 触及外部不可信输入; 改变身份、权限或秘密处理 | [安全、状态与并发边界](skills/if-state/SKILL.md) | 明确保证建立的位置、原子转移和部分失败语义。 |
 | domain | contracts | 本次改变影响已依赖的外部行为; 涉及需要保留或迁移的持久数据 | [真实兼容与迁移契约](skills/if-contracts/SKILL.md) | 保护受影响的真实承诺，在边界完成必要兼容。 |
 | domain | dependencies | 新增、升级或替换依赖; 依赖某个尚未核实的 API 或版本行为 | [依赖与 API 事实](skills/if-dependencies/SKILL.md) | 核对已装版本的真实接口与来源，不根据名字猜包。 |

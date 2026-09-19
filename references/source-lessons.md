@@ -64,6 +64,16 @@
 
 **边界：** 单个 Atom 不给多个状态或外部服务提供事务；CAS 循环也不是业务网络重试的模板。本 Skill 对网络重试期限、取消和重复效果的要求是额外适配，不是要求改写 Clojure 同步算法。
 
+### 传输重试对照：操作身份、恢复责任与保证范围
+
+**Go `go1.23.2`：** [`transport.go`](https://github.com/golang/go/blob/go1.23.2/src/net/http/transport.go) 的 `shouldRetryRequest` 区分未写出请求、连接是否复用、错误类别与可重放性；`rewindBody` 处理请求体能否重建。[`request.go`](https://github.com/golang/go/blob/go1.23.2/src/net/http/request.go) 的 `isReplayable` 识别特定方法或幂等键声明，但这不是服务端已经去重的证明。借鉴的是根据失败位置和协议选择恢复，不把所有连接错误统一转成重试。
+
+**Stripe Python `v15.6.1`：** [`_api_requestor.py`](https://github.com/stripe/stripe-python/blob/v15.6.1/stripe/_api_requestor.py) 在进入重试前构造请求头，接受调用者提供的幂等键；[`_http_client.py`](https://github.com/stripe/stripe-python/blob/v15.6.1/stripe/_http_client.py) 在同一重试循环复用请求参数，按次数、底层错误可重试标志及服务端提示决定是否继续。由此可见，一次 SDK 调用内部的重试和 Agent 再次调用 API 是不同边界：后者若重新生成键，不能指望前一次身份自动延续。[API 文档](https://docs.stripe.com/api/idempotent_requests) 还限定参数一致性与记录保留期，并说明同键可能重放失败响应；不能把幂等误作必然成功。
+
+**作者说明与反例：** [Stripe 的 Brandur Leach](https://stripe.com/blog/idempotency) 区分连接前失败、处理中失败、已成功却丢失响应；[AWS 的 Malcolm Featonby](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/) 区分同一次请求重传与用户有意创建两个相同资源，并讨论同键异参、晚到请求和保存期限。[Google SRE](https://sre.google/sre-book/handling-overload/) 将重试限制在适当责任层，并用预算避免多层放大。
+
+**提炼与边界：** 原操作的等待、查询和重放不是同一个动作；可能重复产生效果的重放既要保持意图，也要有接收方仍有效的保证；已确认未执行则按实际失败条件恢复。客户端日志或包装无法单独填补远端提交后的确认缺口，状态查询也要考虑可见性。优先使用现有协议、句柄和恢复机制，不从这些样本推出每项任务都需去重平台、统一超时或固定重试次数；源码阅读不是端到端故障实验，更不是模型效果证据。
+
 <a id="evolve"></a>
 ## 演进：改变要有范围，效果要有证据
 

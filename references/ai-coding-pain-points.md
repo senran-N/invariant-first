@@ -37,9 +37,15 @@
 
 对照 [SQLite 测试说明的 mutation testing](https://sqlite.org/testing.html#mutation_testing) 与 `version-3.46.1` 的 [malloc_common.tcl](https://github.com/sqlite/sqlite/blob/version-3.46.1/test/malloc_common.tcl)：前者区分执行过分支与能够发现分支行为被改变，并说明仅影响速度的分支可能造成误判；后者将故障注入的执行与后续检查分开，提供完整性检查。结合 micrograd 的独立参考，提炼为“目标错误仍在时，这个观测会不会揭露它”。这是按风险选择复现、独立预期或隔离对照的判断，不是让每次小改都跑变异测试、禁止替身、禁止删除过时测试或复刻数据库测试平台。指令变化尚未接受模型对照评估。
 
+**恢复应接续原操作，不把通信尝试当成业务意图。** [Cursor 的自动恢复请求](https://forum.cursor.com/t/agent-should-auto-abort-and-retry-when-stalled-30s-not-hang-until-manual-stop/161234)（2026-05-21）描述流式连接停滞，主张约 30 秒无进展便中止并重试；6 月回复称已有流监测而 UI 仍可能滞留。这是报告与回复，不是本包复现。相反，[长命令超时讨论](https://forum.cursor.com/t/timeout-setting-on-terminal-shell-agent-tool/148885)（2026-01-14）描述正常测试需要 20 分钟乃至更久。两者等待的对象不同，不能归纳成统一的静默阈值。[Claude Code #54086](https://github.com/anthropics/claude-code/issues/54086)（2026-04-27）则报告：本想醒来查看后台测试，却把完整审查命令再次执行。此处借鉴操作身份与观察/执行的区分，不采纳其按命令前缀封禁的具体建议；未独立复现，也不据 issue 关闭状态推断已修复。
+
+[Everett Quebral 的 Idempotency for AI Agents](https://www.everettquebral.com/blog/artificial-intelligence/idempotency-for-ai-agents)（2026-08-03）用退款超时的说明性例子讨论已完成、仍在执行和结果未知，强调稳定的操作身份。这不是提供运行日志的事故统计。与 [Brandur Leach 的 Stripe 工程说明](https://stripe.com/blog/idempotency)、[AWS 的幂等 API 设计](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/) 及 [Go / Stripe 版本化实现](source-lessons.md#deliver) 对照后，落点是：先分清操作是否还在运行、结果是否已存在，安全重试保持同一意图，新的独立意图不被错误去重。接收方不支持去重时，仅在客户端包一层或生成键不能消除提交与确认之间的不确定性；去重有效期、参数和作用范围都是条件，不是“一次加键永久安全”。
+
+现有 recovery 中“重复只为新信息”的表述不足以涵盖安全重试对暂时故障的恢复作用，现区分诊断循环与操作重试：前者需要有区分力的观察，后者需要有效恢复契约和预算。等待、续取结果与重放分别决定动作；handoff 保留未决操作的定位信息。按 [Google SRE 的重试责任与预算](https://sre.google/sre-book/handling-overload/) 防止各层重复放大工作，不固定次数、时长或要求新建调度平台。上述归纳尚未经过模型对照评估。
+
 ## 继承材料的来源与边界
 
-A 编号用于保留已有来源坐标，不对应新增问题条目。旧材料不是本轮重新运行的实验；本轮直接复核的网页与源码在上节。
+A 编号用于保留已有来源坐标，不对应新增问题条目，也不表示每轮都重新读取或复现实验；各机制段落分别说明报告、作者解释与源码依据的限制。
 
 - **A1** [Anthropic：长任务 harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)。特定系统的工程经验。
 - **A2 / A11** [Anthropic：长任务应用开发](https://www.anthropic.com/engineering/harness-design-long-running-apps)。实现与评价方法，不推出每项任务都要多 Agent。
