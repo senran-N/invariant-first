@@ -17,9 +17,13 @@
 
 ## 机制与适用前提
 
-**对齐用户价值，不把实施便利当成缩减目标的授权。** [Cursor 的原始报告](https://forum.cursor.com/t/agent-ignores-ambiguous-impossible-instructions-instead-of-asking/171061)（2026-09-08）描述 Agent 对一个有歧义的前置要求自行解释，得知无法执行后又直接略过。报告未给出完整版本，后续支持回复还对 IDE/CLI 作了不同假设；这里不认定统一根因，也不采用“遇到任何未知就停掉所有工作”的建议。相反，[逐次审批的讨论](https://forum.cursor.com/t/cursor-agent-asking-for-approval-at-each-code-change/148476)（2026-01）说明过密的操作确认同样有成本；它涉及工具权限体验，不能当成所有澄清问题都有害的证据，更不据此关闭安全机制。[Ambig-SWE v3](https://arxiv.org/html/2502.13069v3)（2026-02-21）把识别欠明确、取得有效信息和利用回答分开研究；其主要实验使用人为删减的问题与模型扮演的用户，不能外推为真实用户的通用改善幅度。
+**对齐用户价值，区别澄清决定与重复索要授权。** 2026-09-20 复核 [Cursor 的原始报告及回复](https://forum.cursor.com/t/agent-ignores-ambiguous-impossible-instructions-instead-of-asking/171061)（09-08 发帖）：用户说审查前先 clear，Agent 先理解成撤销 SVN 合并，纠正后得知要求是清上下文，又略过该前提继续审查。报告没有完整版本，支持回复对 IDE/CLI 的判断与作者不同；不能认定统一根因，也不照搬作者“任何未知都停掉所有工作”的建议。相反，[Multitask 原帖及回复](https://forum.cursor.com/t/multitask-agent-does-not-do-all/163097)（06-12 至 06-17）描述已获授权的一组任务只做几项，就询问能否继续；支持方仍在索要运行信息，不能据此认定成因或已修复。两者共同要求的不是更多提问，而是判断到底缺少用户决定，还是只剩应当完成的工作。
 
-[作者方法与 OpenSpiel 的源码对照](source-lessons.md#value-and-intent) 支持两项区分：事实由调查取得，意向分歧由有建议的交流澄清；操作合法、链路稳定与策略或结果质量分别评价。本包旧表述把提问收窄到冲突/高影响操作，又让设计默认列非目标，容易为擅自定重点和缩范围留出解释空间；这只是指令审查发现，不是已证实的模型因果解释。现替换为价值、能力与成功标准先对齐，按决定依赖提问，简化实现但不擅自删减承诺。明确的局部任务仍直接做；需要体验才能判断的取舍用适当样例或原型，不把交流变成穷尽问卷。
+[Makefile 原帖](https://forum.cursor.com/t/ai-replaces-entire-file-instead-of-editing-it/163422)（06-16 发帖，事件为 06-15）给出另一种偏移：新增迁移入口时替换整个文件，丢失仍在用的开发、测试和部署目标，提交却称其为精简和弃用。没有复现其私有项目；不采用“只许添加”的通则。归纳的是当前局部工作不能重新定义整个交付的范围。以上都是用户报告，不是发生率或本包效果证据。
+
+[Hacker News 讨论](https://news.ycombinator.com/item?id=44991884)（2025-08-23）既有用户认为问题揭示遗漏的取舍，也有人宁可先修订上下文、减少来回；其中固定提问数量和训练原因猜测不作为依据。[Thomas Wang 的游戏音频实践](https://xiye.art/posts/2026-09-09-ai-skills-for-game-audio/)（2026-09-09）展示人回答“角色与播放实例能否解耦”后，方案从独立播放转向共享播放、分别定位；作者也说明明确问题可直接处理。这里关注回答改变了具体设计，不以访谈轮数评优；该比较给提问组增加了信息，不是等信息量的随机对照，也未在本机运行其工程。
+
+结合 [版本化协作方法与价值评价](source-lessons.md#value-and-intent)，共同判断在提问处区分用途、事实与技术细节，候选选项保留已有要求；build 在关键反馈后按尚未达标的用户结果重排下一步。问题只阻塞依赖它的决定，明确授权继续有效。既有 [逐次审批讨论](https://forum.cursor.com/t/cursor-agent-asking-for-approval-at-each-code-change/148476) 与 [Ambig-SWE v3](https://arxiv.org/html/2502.13069v3) 分别提供权限体验与人为欠明确任务的研究线索，本次未重新复核它们。真实对话中的收益仍按 [多轮协作对照](evaluation.md#collaboration) 待测，不用算法实验或目录测试替代。
 
 **把现象与解释分开。** [V2EX 作者的公开摘要](https://global.v2ex.com/t/1237708) 描述：录制任务未退出，尚未找到卡点时，Agent 已为不同猜测分别修改生命周期、取消和重试。这里只读取到检索摘要，正文访问转向登录，未复现该项目。对应的成熟机制见 Git `v2.46.0` 的 [bisect_run / verify_good](https://github.com/git/git/blob/v2.46.0/builtin/bisect.c)：无法测试的 125 状态走 skip；首次遇到可能源于执行环境的 126/127，还会在已知良好版本作对照。借鉴的是先判断信号能说明什么，再用能区分原因的反馈更新判断，不是每次修复都执行二分或重复测试。
 

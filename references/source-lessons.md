@@ -35,9 +35,11 @@
 
 **Matt Pocock 的版本化方法：** `mattpocock/skills` 的 `c55ee46073ed923f86ce59a5eb3b6d895095d1b7` 中，[grilling](https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/productivity/grilling/SKILL.md) 按决定的依赖关系组织问题，给出建议，并把可调查的事实与用户作出的决定分开；[to-spec](https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md) 从已有讨论综合规格，而非重新进行整轮访谈。借鉴回答会改变下游选择、已有决定应延续；不移植其穷尽式提问、所有决定都交给用户、强制子代理或固定发布流程。作者[关于过度访谈的说明](https://www.aihero.dev/things-people-get-wrong-with-grill-me-and-grill-with-docs)（2026-05-25 更新）还区分能讨论的取舍与需通过原型理解的体验；这里不采用其中未验证的统一上下文阈值或吞吐推断。
 
+**不同协作方法的取舍：** [Superpowers 的 brainstorming](https://github.com/obra/superpowers/blob/5bf4e78011075bcfc0dc295f0724994cd123ee71/skills/brainstorming/SKILL.md) 在 `5bf4e780` 中先辨认用途、使用者和成功标准，再将共同理解带入方案；但也要求按工作类别逐阶段批准，并且一次只问一个问题。上述 Matt Pocock 版本则把前提已确定的问题放在同一轮，尚依赖未决答案的问题留到后面。两种组织方式不同，不能仅凭名气选一种为所有任务的默认流程。本包借鉴问题与决定的依赖、回答进入方案，而不移植固定提问节奏、穷尽访谈或对每个已授权内部步骤重新审批。这里比较的是实际指令，不是运行这些 Skill 后的效果排名。
+
 **OpenSpiel 的可核查区分：** `google-deepmind/open_spiel` 的 `48401890ee9857e611678302371378175a8e4c6b` 中，[Kuhn 游戏实现](https://github.com/google-deepmind/open_spiel/blob/48401890ee9857e611678302371378175a8e4c6b/open_spiel/games/kuhn_poker/kuhn_poker.cc) 分别定义合法动作、可观察信息与收益；[策略评价测试](https://github.com/google-deepmind/open_spiel/blob/48401890ee9857e611678302371378175a8e4c6b/open_spiel/python/algorithms/exploitability_test.py) 对始终选择首个合法动作、均匀随机策略和均衡策略使用不同的 NashConv 预期。合法性约束不等于策略目标；策略也不能使用决策者实际看不到的信息。NashConv 衡量单方偏离可获得的改善，不等于对指定对手的胜率；选哪种评价仍取决于用户目标，不能用一个指标重新替用户定重点。源码测试的存在不是本包已执行该项目的证明。
 
-本轮另用标准库分数运算写了独立的双人 Kuhn 枚举器，遍历六种发牌及每位玩家的 64 个纯策略响应；三组策略均满足合法动作分布，NashConv 分别为 2、11/12、0，与上述测试的预期吻合。它只验证这个有限游戏的指标区分，不是运行 OpenSpiel、复现用户的 Mod、评估意图推断或验证本 Skill 的模型效果。
+此前用标准库分数运算写了独立的双人 Kuhn 枚举器，遍历六种发牌及每位玩家的 64 个纯策略响应；三组策略均满足合法动作分布，NashConv 分别为 2、11/12、0，与上述测试的预期吻合。它只验证这个有限游戏的指标区分，不是运行 OpenSpiel、复现用户的 Mod、评估意图推断或验证本 Skill 的模型效果。
 
 **提炼与边界：** 对齐用户为何需要成果，再把关键能力分配到产生该价值的机制与可观察结果。必要底线约束方案，不能冒充目标；已明确要求策略质量时，稳定执行只是其支撑。用户只要执行器可靠性时，稳定性又可以是当前目标，不擅自扩大为策略研究。问题不清就用会改变取舍的问题澄清；明确后自主解决实现。分阶段保留总体承诺，删减另行协商；不复制某个访谈模板、评分公式或游戏算法成为通用流程。
 
