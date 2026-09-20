@@ -9,7 +9,7 @@ description: 构建优先的跨 harness 工程技能路由器。用于从零开�
 
 ## 执行
 
-1. 读取 [共同判断](RULES.md)，根据当前交付目标选一条 PRIMARY。语义选择由你判断，文件位置从下表取得，不从任务名生成路径。
+1. 读取 [共同判断](RULES.md)，根据当前交付目标选一条 PRIMARY。路由选择不代替与用户对齐产品价值、必需能力和成功标准；未决意向按共同判断澄清，已明确的直接沿用。文件位置从下表取得，不从任务名生成路径。
 2. 按表中原样链接打开对应文件。本页链接相对于当前已加载的根 `SKILL.md`，不是项目工作目录；子文档中的链接相对于该文档。宿主提供资源读取能力时使用它，不把资源引用当作已确认的 shell 路径。
 3. 只为本次确认的难点补充 SUPPORT。PRELUDE 恢复事实与进展，DOMAIN 处理实际边界；它们不改变 PRIMARY 的交付物和权限。触发条件不明时查 [分流表](MASTER-ROUTING.md)。
 4. 读到所需方法就执行 ACTION，完成当前目标。只继续用户已请求的后续工作；不把分类、加载或检查本身当交付。
@@ -50,7 +50,7 @@ Generated from `config/routing.json`.
 python scripts/route.py --task "Implement the requested feature" --intent build
 ```
 
-`intent` 是已作出的目标判断，文本匹配只是候选。`facts` 只描述当前任务；`LOAD_NOW` 是阅读集合，`DEFERRED` 在触及边界前读取，`NEXT` 只保留已请求的后续目标。能力提示不是必装工具或新授权。
+`intent` 只标记本轮交付路线，不表示已理解用户的产品意向；文本匹配只是候选。`facts` 只描述当前任务；`LOAD_NOW` 是阅读集合，`DEFERRED` 在触及边界前读取，`NEXT` 只保留已请求的后续目标。能力提示不是必装工具或新授权。
 
 ## 按需读取
 

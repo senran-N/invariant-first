@@ -18,8 +18,8 @@ A text candidate always needs an intent check. No route grants permission to act
 | 6 | fix | 改变已观察到的错误行为 | [缺陷与根因修复](skills/if-fix/SKILL.md) | 追到最早失真的事实或状态转移，完成最小完整修复。 |
 | 7 | evolve | 移动、重命名或替换结构、依赖与方向，完成范围内切换 | [重构、迁移与转向](skills/if-evolve/SKILL.md) | 先区分结构编辑与语义变化，改完必要引用和调用。 |
 | 8 | release | 生成发布产物、准备交付或执行已授权发布 | [打包与交付发布](skills/if-release/SKILL.md) | 用仓库真实流程构建分发产物，检查产物使用路径。 |
-| 9 | frame | 用户要方向、设计、解释或接手判断，而非立刻实现 | [定向、架构与接手](skills/if-frame/SKILL.md) | 找真实入口与核心表示，做出一个能推进任务的取舍。 |
-| 10 | build | 实现新的可用能力或补完现有功能 | [预览与功能开发](skills/if-build/SKILL.md) | 先实现核心难点，再接通真实入口、处理与输出。 |
+| 9 | frame | 用户要方向、设计、解释或接手判断，而非立刻实现 | [定向、架构与接手](skills/if-frame/SKILL.md) | 先对齐用户价值、必需能力与关键取舍，再确定机制和验证。 |
+| 10 | build | 实现新的可用能力或补完现有功能 | [预览与功能开发](skills/if-build/SKILL.md) | 先贯通产生核心价值的真实路径，再完成并验证约定能力。 |
 
 No useful text match: provisional `build`; resolve from the user's goal, not guesswork.
 Use explicit `--intent` or the equivalent semantic choice; do not ask the user to choose a routing menu.
@@ -46,7 +46,7 @@ Load a deferred specialist before working on its boundary; deferred does not mea
 
 Stage adjusts obligations; it is not another pipeline.
 
-- **preview**: 无真实旧依赖时直接定接口；做完整核心，不造兼容平台。
+- **preview**: 无真实旧依赖时直接定接口；验证核心价值并完成约定能力，不造兼容平台。
 - **adopted**: 保护本次触及的真实外部契约；内部可以直接简化。
 - **unknown**: 沿实际调用和数据判断边界，不为确认阶段启动全仓调查。
 

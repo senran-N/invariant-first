@@ -5,7 +5,7 @@
 目录：[探索](#explore) · [交付](#deliver) · [演进](#evolve) · [归纳边界](#limits) · [文档](#documentation) · [可移植性](#portability) · [生命周期补充与路由映射](#lifecycle)
 
 <a id="explore"></a>
-## 探索：缩小问题，保留真实闭环
+## 探索：对齐价值，保留真实闭环
 
 ### S1 · Andrej Karpathy / micrograd：小实现也要有独立判据
 
@@ -15,7 +15,7 @@
 - [micrograd/engine.py](https://github.com/karpathy/micrograd/blob/c911406/micrograd/engine.py)：`Value` 保存值、梯度与计算图关系；`backward` 按拓扑顺序反向传播。
 - [test/test_engine.py](https://github.com/karpathy/micrograd/blob/c911406/test/test_engine.py)：`test_sanity_check`、`test_more_ops` 对同一运算分别运行 micrograd 和 PyTorch，比较前向结果与梯度。
 
-**提炼：** 压缩问题范围，不省略核心算法；用参考实现或已知性质判断是否真的做对。探索验收是可运行的核心，不是层次漂亮的脚手架。
+**提炼：** 缩小一次实验的规模，不删掉要验证的核心能力；用参考实现或已知性质判断是否真的做对。实验回答核心是否成立，不因此重写用户要求的完整交付范围；探索验收不是层次漂亮的脚手架。
 
 **边界：** 这是教育仓库，不是生产服务成熟度模板；不能据此取消输入安全、数值约束或必要资源管理，也不能推断所有作者都采用同一开发顺序。
 
@@ -29,6 +29,17 @@
 **提炼：** 先让清楚的数据模型支撑核心路径；不要先搭一个无实际消费者的通用平台。允许为真实不变量封装，不把“最小”误解为完全没有设计。
 
 **边界：** 只借鉴目标与表示的收敛方式，不复刻早期实现的缺陷、历史存储格式或安全假设。初始提交不能证明兼容在所有新项目中都不重要；“没有旧消费者才不建兼容层”是我们的适用条件。
+
+<a id="value-and-intent"></a>
+### 目标与意向：对齐决定，分别验证价值与底线
+
+**Matt Pocock 的版本化方法：** `mattpocock/skills` 的 `c55ee46073ed923f86ce59a5eb3b6d895095d1b7` 中，[grilling](https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/productivity/grilling/SKILL.md) 按决定的依赖关系组织问题，给出建议，并把可调查的事实与用户作出的决定分开；[to-spec](https://github.com/mattpocock/skills/blob/c55ee46073ed923f86ce59a5eb3b6d895095d1b7/skills/engineering/to-spec/SKILL.md) 从已有讨论综合规格，而非重新进行整轮访谈。借鉴回答会改变下游选择、已有决定应延续；不移植其穷尽式提问、所有决定都交给用户、强制子代理或固定发布流程。作者[关于过度访谈的说明](https://www.aihero.dev/things-people-get-wrong-with-grill-me-and-grill-with-docs)（2026-05-25 更新）还区分能讨论的取舍与需通过原型理解的体验；这里不采用其中未验证的统一上下文阈值或吞吐推断。
+
+**OpenSpiel 的可核查区分：** `google-deepmind/open_spiel` 的 `48401890ee9857e611678302371378175a8e4c6b` 中，[Kuhn 游戏实现](https://github.com/google-deepmind/open_spiel/blob/48401890ee9857e611678302371378175a8e4c6b/open_spiel/games/kuhn_poker/kuhn_poker.cc) 分别定义合法动作、可观察信息与收益；[策略评价测试](https://github.com/google-deepmind/open_spiel/blob/48401890ee9857e611678302371378175a8e4c6b/open_spiel/python/algorithms/exploitability_test.py) 对始终选择首个合法动作、均匀随机策略和均衡策略使用不同的 NashConv 预期。合法性约束不等于策略目标；策略也不能使用决策者实际看不到的信息。NashConv 衡量单方偏离可获得的改善，不等于对指定对手的胜率；选哪种评价仍取决于用户目标，不能用一个指标重新替用户定重点。源码测试的存在不是本包已执行该项目的证明。
+
+本轮另用标准库分数运算写了独立的双人 Kuhn 枚举器，遍历六种发牌及每位玩家的 64 个纯策略响应；三组策略均满足合法动作分布，NashConv 分别为 2、11/12、0，与上述测试的预期吻合。它只验证这个有限游戏的指标区分，不是运行 OpenSpiel、复现用户的 Mod、评估意图推断或验证本 Skill 的模型效果。
+
+**提炼与边界：** 对齐用户为何需要成果，再把关键能力分配到产生该价值的机制与可观察结果。必要底线约束方案，不能冒充目标；已明确要求策略质量时，稳定执行只是其支撑。用户只要执行器可靠性时，稳定性又可以是当前目标，不擅自扩大为策略研究。问题不清就用会改变取舍的问题澄清；明确后自主解决实现。分阶段保留总体承诺，删减另行协商；不复制某个访谈模板、评分公式或游戏算法成为通用流程。
 
 <a id="deliver"></a>
 ## 交付：保护真实承诺和真实风险
