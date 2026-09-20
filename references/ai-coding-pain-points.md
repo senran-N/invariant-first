@@ -51,6 +51,10 @@
 
 Daniel Stenberg 的 [2025-07 维护经历](https://daniel.haxx.se/blog/2025/07/14/death-by-a-thousand-slops/) 描述核查低质量报告的负担；他的 [2025-10 反例](https://daniel.haxx.se/blog/2025/10/10/a-new-breed-of-analyzers/) 又展示有效的 AI 辅助发现，其中一处正确修复是改错注释而不是实现新容错行为。[2026-04 的后续](https://daniel.haxx.se/blog/2026/04/22/high-quality-chaos/) 描述报告质量改善后仍存在的处理压力。因此不按 AI 来源接受或排斥报告，也不把降低报告数当目标。对照 [R4 的 Go 控制流诊断与 curl 历史修正](source-lessons.md#review-evidence)，提炼为：沿真实条件确认违背了什么保证，区分问题成立与修法成立，再以原条件复核是否修好。高后果的未知需要交代，不因缺少可运行环境就排除；显示关闭、重新扫描未提及或局部检查通过，都不能扩大证据的结论范围。落实在 review 与 fix，不另建事故目录或审批流程。
 
+**按读者任务保留信息。** [Tildes 的原始讨论](https://tildes.net/~comp/1g6h/slop_is_the_new_name_for_unwanted_ai_generated_content)（2024-05-08）中，审查者描述 AI 生成的 PR 长篇逐文件复述且影响说明不准，阅读成本落到接收者身上；[Simon Willison 的作者说明](https://simonwillison.net/2024/May/8/slop/) 将发布责任放在使用工具的人，而非反对一切 AI 写作。反向线索是 [Cursor 的注释删除报告](https://forum.cursor.com/t/unintended-code-alterations-in-agent-mode-removal-translation-of-comments-and-console-logs/93881)（2025-05-20）：未经要求的精简或翻译也会损害协作者与调试用途。这些是作者经验与用户报告，不是模型行为统计。
+
+对照 [Git `v2.46.0` 的 SubmittingPatches](https://github.com/git/git/blob/v2.46.0/Documentation/SubmittingPatches)：维护理由进入提交正文，补丁轮次的沟通放在分隔线后；它也要求解释有实际意义的排除条件。[rust-analyzer `2024-09-16` 的架构说明](https://github.com/rust-lang/rust-analyzer/blob/2024-09-16/docs/dev/architecture.md) 保留解析器和语法层刻意隔离的依赖，并给出原因。两者支持按信息职责编辑，而非按否定词或字数删除：纠正要改变成稿事实，必要的修订回应留在对话；真实边界、未决事项和设计理由仍就近可查。本次用户提供的方案片段暴露了修订回应与正文混写，现收紧共同判断及 frame/document 的输出边界，具体写法见 [文档方法](documentation.md)。未作独立模型对照，不把上述源码阅读当成效果证明。
+
 ## 继承材料的来源与边界
 
 A 编号用于保留已有来源坐标，不对应新增问题条目，也不表示每轮都重新读取或复现实验；各机制段落分别说明报告、作者解释与源码依据的限制。
