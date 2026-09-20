@@ -55,6 +55,8 @@ Daniel Stenberg 的 [2025-07 维护经历](https://daniel.haxx.se/blog/2025/07/1
 
 对照 [Git `v2.46.0` 的 SubmittingPatches](https://github.com/git/git/blob/v2.46.0/Documentation/SubmittingPatches)：维护理由进入提交正文，补丁轮次的沟通放在分隔线后；它也要求解释有实际意义的排除条件。[rust-analyzer `2024-09-16` 的架构说明](https://github.com/rust-lang/rust-analyzer/blob/2024-09-16/docs/dev/architecture.md) 保留解析器和语法层刻意隔离的依赖，并给出原因。两者支持按信息职责编辑，而非按否定词或字数删除：纠正要改变成稿事实，必要的修订回应留在对话；真实边界、未决事项和设计理由仍就近可查。本次用户提供的方案片段暴露了修订回应与正文混写，现收紧共同判断及 frame/document 的输出边界，具体写法见 [文档方法](documentation.md)。未作独立模型对照，不把上述源码阅读当成效果证明。
 
+**规划的细节应消除关键歧义。** [Cursor 的规划讨论](https://forum.cursor.com/t/boosting-productivity-with-cursor-s-new-plan-mode/136015)（2025-10）既有使用者称规划减少纠正，也有回复描述耗时很久仍偏题或半成品；这些自报数字不是对照实验。[Cody Maughan 的规划记录](https://codymaughan.com/build-logs/ai-planning-principles/)（2026-01-25）描述把预览更新从“先写盘再刷新”改为“本地状态即时显示、后台延迟保存”的具体取舍；文末实施尚待开始，不能把作者对路线图的信心当成产品效果，也不采纳双模型必优、固定分阶段或模型分工的通则。结合 [场景与机制对照](source-lessons.md#mechanism-walkthrough)，把 frame 中抽象的“落实机制”改成沿关键输入走通判断与结果。该补充只增加决定性信息；明确需求继续执行，成稿无需附上整个讨论或演练。
+
 ## 继承材料的来源与边界
 
 A 编号用于保留已有来源坐标，不对应新增问题条目，也不表示每轮都重新读取或复现实验；各机制段落分别说明报告、作者解释与源码依据的限制。
